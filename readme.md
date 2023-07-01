@@ -38,6 +38,9 @@ Feel free to modify the code according to your specific requirements,
 such as changing the incident angle, wavelength, or the number of harmonics. 
 Experiment with different parameters and explore the visualization of various modes.
 
+## Known Issues
+- Unstable, numerical error when using large harmonics, period=wavelength cases.
+
 ## Future Direction
 
 The future direction of this project includes the integration of TensorFlow to improve performance 
