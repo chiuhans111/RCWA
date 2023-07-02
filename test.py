@@ -29,13 +29,25 @@ modes.set_incidence_AOI_POI(
     POI=np.deg2rad(45))
 modes.set_wavelength(0.532)
 
+# Default Matrix
+sbuilder = ScatterMatBuilder(modes)
+ref_mode = EigenMode(modes)
+trn_mode = EigenMode(modes)
+ref_mode.from_homogeneous(er1, ur1)
+trn_mode.from_homogeneous(er2, ur2)
+Sref = sbuilder.BuildScatterRef(ref_mode)
+Strn = sbuilder.BuildScatterTrn(trn_mode)
+
+Sglobal = Sref
+
 # Create Device
 x, y = domain.get_coordinate(modes.num_modes_x*4, modes.num_modes_y*4)
 mask = x > 0
 er = (er2 - er1) * mask + er1
 eigenmode = EigenMode(modes)
 eigenmode.from_material_er(er)
-
+S = sbuilder.BuildScatter(eigenmode, 0.01)
+Sglobal = Sglobal @ S
 
 plt.figure(figsize=(10, 8))
 mode_order = np.argsort(np.abs(modes.mx)+np.abs(modes.my))
@@ -47,19 +59,8 @@ for i in range(6):
 plt.tight_layout()
 plt.show()
 
-# Default Matrix
-sbuilder = ScatterMatBuilder(modes)
-ref_mode = EigenMode(modes)
-trn_mode = EigenMode(modes)
-ref_mode.from_homogeneous(er1, ur1)
-trn_mode.from_homogeneous(er2, ur2)
-Sref = sbuilder.BuildScatterRef(ref_mode)
-Strn = sbuilder.BuildScatterTrn(trn_mode)
 
-
-# Device Matrix
-S = sbuilder.BuildScatter(eigenmode, 0.3)
-Sglobal = Sref @ S @ Strn
+Sglobal = Sglobal @ Strn
 
 # Incidence
 delta = (modes.mx == 0)*(modes.my == 0)

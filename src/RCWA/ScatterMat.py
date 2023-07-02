@@ -1,6 +1,7 @@
 import tensorflow as tf
 from src.RCWA.EigenMode import EigenMode
 from src.RCWA.Modes import Modes
+from scipy import linalg as LA
 
 
 def StarProduct(A, B):
@@ -12,14 +13,16 @@ def StarProduct(A, B):
     I = tf.eye(A11.shape[0], dtype=tf.dtypes.complex128)
 
     # Compute intermediate matrices
-    I_B11A22 = I-B11@A22
-    I_A22B11 = I-A22@B11
+    A12_I_B11A22 = tf.transpose(
+        tf.linalg.solve(tf.transpose(I-B11@A22), tf.transpose(A12)))
+    B21_I_A22B11 = tf.transpose(
+        tf.linalg.solve(tf.transpose(I-A22@B11), tf.transpose(B21)))
 
     # Calculate elements of the Star Product matrix
-    S11 = A12@tf.linalg.solve(I_B11A22, B11@A21)+A11
-    S12 = A12@tf.linalg.solve(I_B11A22, B12)
-    S21 = B21@tf.linalg.solve(I_A22B11, A21)
-    S22 = B21@tf.linalg.solve(I_A22B11, A22@B12)+B22
+    S11 = A12_I_B11A22@B11@A21+A11
+    S12 = A12_I_B11A22@B12
+    S21 = B21_I_A22B11@A21
+    S22 = B21_I_A22B11@A22@B12+B22
 
     # Return the Star Product matrix
     return (S11, S12, S21, S22)
