@@ -14,8 +14,8 @@ The RCWA formulation is based on the following references:
 
 ## Directory Structure
 
-- `RCWA/formulation/`: Contains the formulation document in both docx and pdf formats, providing a detailed explanation of the RCWA method.
-- `test/rcwa_v1.ipynb`: Includes the code implementation of the RCWA method, achieving energy conservation (T+R=1) and providing visualization of some modes.
+- `formulation/`: Contains the formulation document in both docx and pdf formats, providing a detailed explanation of the RCWA method.
+- `notebook/rcwa_v1.ipynb`: Includes the code implementation of the RCWA method, achieving energy conservation (T+R=1) and providing visualization of some modes.
 
 ## Requirements
 
@@ -26,11 +26,11 @@ The RCWA formulation is based on the following references:
   - SciPy (for solving eigen problems)
 
 ## Formulation
-The document available in the `RCWA/formulation/` directory provides derivations of the mathematical equations, and implementation details of the RCWA method.
+The document available in the `formulation/` directory provides derivations of the mathematical equations, and implementation details of the RCWA method.
 
 ## Code Implementation
 
-The `test/rcwa_v1.ipynb` Jupyter Notebook file contains the code implementation of the RCWA method. 
+The `notebook/rcwa_v1.ipynb` Jupyter Notebook file contains the code implementation of the RCWA method. 
 The provided code achieves energy conservation (T+R=1). 
 The notebook also includes visualization capabilities to explore and visualize some of the modes obtained through RCWA calculations.
 
@@ -54,4 +54,3 @@ If you have ideas, suggestions, or would like to contribute to the project, plea
 I am an electro-optical student who has a strong passion for optics. 
 I developed this RCWA implementation as part of my research work.
 If you have any questions, suggestions, or would like to collaborate on optical research projects, feel free to contact me.
-
