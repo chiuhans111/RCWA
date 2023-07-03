@@ -14,9 +14,9 @@ def StarProduct(A, B):
 
     # Compute intermediate matrices
     A12_I_B11A22 = tf.transpose(
-        tf.linalg.solve(tf.transpose(I-B11@A22), tf.transpose(A12)))
+        LA.solve(tf.transpose(I-B11@A22), tf.transpose(A12)))
     B21_I_A22B11 = tf.transpose(
-        tf.linalg.solve(tf.transpose(I-A22@B11), tf.transpose(B21)))
+        LA.solve(tf.transpose(I-A22@B11), tf.transpose(B21)))
 
     # Calculate elements of the Star Product matrix
     S11 = A12_I_B11A22@B11@A21+A11
@@ -93,15 +93,15 @@ class ScatterMatBuilder:
         V = eigenmode.V
         LAM = eigenmode.LAM
 
-        WW = tf.linalg.solve(W, self.W0)
-        VV = tf.linalg.solve(V, self.V0)
+        WW = LA.solve(W, self.W0)
+        VV = LA.solve(V, self.V0)
         A = WW-VV  # Swap sign improves accuracy???
         B = WW+VV
         X = tf.linalg.diag(tf.exp(-LAM*self.k0*L))
-        AiX = tf.linalg.solve(A, X)
+        AiX = LA.solve(A, X)
         M = A-X@B@AiX@B
-        S11 = tf.linalg.solve(M, X@B@AiX@A-B)
-        S12 = tf.linalg.solve(M, X@(A-B@tf.linalg.solve(A, B)))
+        S11 = LA.solve(M, X@B@AiX@A-B)
+        S12 = LA.solve(M, X@(A-B@LA.solve(A, B)))
         return ScatterMat((S11, S12, S12, S11))
 
     def BuildScatterRef(self, eigenmode: EigenMode):
@@ -119,15 +119,15 @@ class ScatterMatBuilder:
         W = eigenmode.W
         V = eigenmode.V
 
-        WW = tf.linalg.solve(W, self.W0)
-        VV = tf.linalg.solve(V, self.V0)
+        WW = LA.solve(W, self.W0)
+        VV = LA.solve(V, self.V0)
         A = WW+VV
         B = WW-VV
         Ai = tf.linalg.inv(A)
-        S11 = tf.transpose(tf.linalg.solve(tf.transpose(A), tf.transpose(B)))
+        S11 = tf.transpose(LA.solve(tf.transpose(A), tf.transpose(B)))
         S12 = 0.5*(A-S11@B)
         S21 = 2*Ai
-        S22 = -tf.linalg.solve(A, B)
+        S22 = -LA.solve(A, B)
         return ScatterMat((S11, S12, S21, S22))
 
     def BuildScatterTrn(self, eigenmode: EigenMode):
@@ -145,13 +145,13 @@ class ScatterMatBuilder:
         W = eigenmode.W
         V = eigenmode.V
 
-        WW = tf.linalg.solve(W, self.W0)
-        VV = tf.linalg.solve(V, self.V0)
+        WW = LA.solve(W, self.W0)
+        VV = LA.solve(V, self.V0)
         A = WW+VV
         B = WW-VV
         Ai = tf.linalg.inv(A)
-        S11 = -tf.linalg.solve(A, B)
+        S11 = -LA.solve(A, B)
         S12 = 2*Ai
-        S22 = tf.transpose(tf.linalg.solve(tf.transpose(A), tf.transpose(B)))
+        S22 = tf.transpose(LA.solve(tf.transpose(A), tf.transpose(B)))
         S21 = 0.5*(A-S22@B)
         return ScatterMat((S11, S12, S21, S22))
