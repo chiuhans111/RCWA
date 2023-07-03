@@ -1,13 +1,13 @@
 import tensorflow as tf
-from src.RCWA.Domain import Domain
-from src.RCWA.Modes import Modes
-from src.RCWA.EigenMode import EigenMode
-from src.RCWA.ScatterMat import ScatterMatBuilder
+from RCWA.Domain import Domain
+from RCWA.Modes import Modes
+from RCWA.EigenMode import EigenMode
+from RCWA.ScatterMat import ScatterMatBuilder
+from RCWA import Utils
 import numpy as np
-from src.RCWA import Utils
 import matplotlib.pyplot as plt
 
-period = 0.6
+period = 0.357
 
 n1 = 1
 n2 = 2
@@ -21,7 +21,7 @@ domain = Domain()
 domain.set_period_centered(period, period)
 
 modes = Modes(domain)
-modes.set_harmonics(10, 0)
+modes.set_harmonics(20, 0)
 
 
 modes.set_incidence_AOI_POI(
@@ -41,13 +41,14 @@ Strn = sbuilder.BuildScatterTrn(trn_mode)
 Sglobal = Sref
 
 # Create Device
-x, y = domain.get_coordinate(modes.num_modes_x*4, modes.num_modes_y*4)
-mask = x > 0
-er = (er2 - er1) * mask + er1
-eigenmode = EigenMode(modes)
-eigenmode.from_material_er(er)
-S = sbuilder.BuildScatter(eigenmode, 0.01)
-Sglobal = Sglobal @ S
+for i in range(5):
+    x, y = domain.get_coordinate(modes.num_modes_x*4, modes.num_modes_y*4)
+    mask = x > 0
+    er = (er2 - er1) * mask + er1
+    eigenmode = EigenMode(modes)
+    eigenmode.from_material_er(er)
+    S = sbuilder.BuildScatter(eigenmode, 0.2)
+    Sglobal = Sglobal @ S
 
 plt.figure(figsize=(10, 8))
 mode_order = np.argsort(np.abs(modes.mx)+np.abs(modes.my))

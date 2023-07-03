@@ -1,11 +1,11 @@
 import tensorflow as tf
-from src.RCWA.Domain import Domain
-from src.RCWA.Modes import Modes
-from src.RCWA.EigenMode import EigenMode
-from src.RCWA.ScatterMat import ScatterMatBuilder
-from src.RCWA.Device import SlantGrating
+from RCWA.Domain import Domain
+from RCWA.Modes import Modes
+from RCWA.EigenMode import EigenMode
+from RCWA.ScatterMat import ScatterMatBuilder
+from RCWA.Device import SlantGrating
+from RCWA import Utils
 import numpy as np
-from src.RCWA import Utils
 import matplotlib.pyplot as plt
 
 
@@ -23,7 +23,7 @@ domain = Domain()
 domain.set_period_centered(period, period)
 
 modes = Modes(domain)
-modes.set_harmonics(2, 0)
+modes.set_harmonics(1, 0)
 
 
 def run(AOI, slant_angle):
@@ -124,7 +124,7 @@ def run(AOI, slant_angle):
 plt.figure(figsize=(6, 5), dpi=150)
 for slant_angle in [-23.289, -12.55, 0]:
     ts = []
-    AOIs = np.linspace(-20, 50, 61)
+    AOIs = np.linspace(-20, 50, 21)
     for AOI in AOIs:
         T = run(AOI, slant_angle)
         ts.append(np.sum(T * (modes.mx == -1) * (modes.my == 0)))
