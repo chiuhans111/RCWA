@@ -8,6 +8,10 @@ from RCWA import Utils
 import numpy as np
 import matplotlib.pyplot as plt
 
+# Reference:
+# [1] M. A. Golub and A. A. Friesem,
+# “Effective grating theory for resonance domain surface-relief diffraction gratings,”
+# J. Opt. Soc. Am. A, vol. 22, no. 6, p. 1115, Jun. 2005, doi: 10.1364/JOSAA.22.001115.
 
 period = 0.583
 
