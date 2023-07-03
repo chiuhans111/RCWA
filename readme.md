@@ -54,3 +54,7 @@ If you have ideas, suggestions, or would like to contribute to the project, plea
 I am an electro-optical student who has a strong passion for optics. 
 I developed this RCWA implementation as part of my research work.
 If you have any questions, suggestions, or would like to collaborate on optical research projects, feel free to contact me.
+
+## License
+
+The software is licensed under the MIT License. See the [LICENSE.txt](LICENSE.txt) file for details.
