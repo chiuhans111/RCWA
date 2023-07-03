@@ -26,7 +26,7 @@ modes = Modes(domain)
 modes.set_harmonics(10, 0)
 
 
-def run(AOI, slant_angle):
+def run(AOI, slant_angle, depth):
     modes.set_incidence_AOI_POI(
         AOI=np.deg2rad(AOI),
         POI=np.deg2rad(0))
@@ -47,7 +47,7 @@ def run(AOI, slant_angle):
     S = SlantGrating(modes, sbuilder, n1=n1, n2=n2,
                      ff=0.5,
                      slant_angle=np.deg2rad(slant_angle),
-                     depth=1.219,
+                     depth=depth,
                      dff=-1,
                      dz=0.02)
 
@@ -122,11 +122,14 @@ def run(AOI, slant_angle):
 
 
 plt.figure(figsize=(6, 5), dpi=150)
-for slant_angle in [23.289, 12.55, 0]:
+
+for case in range(3):
+    slant_angle = [23.289, 12.55, 0][case]
+    depth = [1.219, 1.309, 1.346][case]
     ts = []
     AOIs = np.linspace(-20, 50, 51)
     for AOI in AOIs:
-        T = run(AOI, slant_angle)
+        R, T = run(AOI, slant_angle, depth)
         ts.append(np.sum(T * (modes.mx == -1) * (modes.my == 0)))
     plt.plot(AOIs, ts)
 plt.grid()

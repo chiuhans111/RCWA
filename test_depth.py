@@ -128,7 +128,7 @@ t0 = []
 t1 = []
 depths = np.linspace(0, 4*period, 61)
 for depth in depths:
-    T = run(depth)
+    R, T = run(depth)
     t0.append(np.sum(T * (modes.mx == 0) * (modes.my == 0)))
     t1.append(np.sum(T * (modes.mx == -1) * (modes.my == 0)))
 plt.plot(depths/period, t0)
