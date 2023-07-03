@@ -1,5 +1,5 @@
 import numpy as np
-from src.RCWA.Domain import Domain
+from RCWA.Domain import Domain
 
 
 class Modes:

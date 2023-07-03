@@ -1,8 +1,8 @@
 import numpy as np
 import tensorflow as tf
-from src.RCWA.Modes import Modes
-from src.RCWA.EigenMode import EigenMode
-from src.RCWA.ScatterMat import ScatterMatBuilder
+from RCWA.Modes import Modes
+from RCWA.EigenMode import EigenMode
+from RCWA.ScatterMat import ScatterMatBuilder
 import matplotlib.pyplot as plt
 
 

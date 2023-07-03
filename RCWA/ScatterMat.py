@@ -1,6 +1,6 @@
 import tensorflow as tf
-from src.RCWA.EigenMode import EigenMode
-from src.RCWA.Modes import Modes
+from RCWA.EigenMode import EigenMode
+from RCWA.Modes import Modes
 from scipy import linalg as LA
 
 
@@ -95,8 +95,8 @@ class ScatterMatBuilder:
 
         WW = tf.linalg.solve(W, self.W0)
         VV = tf.linalg.solve(V, self.V0)
-        A = WW+VV
-        B = WW-VV
+        A = WW-VV  # Swap sign improves accuracy???
+        B = WW+VV
         X = tf.linalg.diag(tf.exp(-LAM*self.k0*L))
         AiX = tf.linalg.solve(A, X)
         M = A-X@B@AiX@B

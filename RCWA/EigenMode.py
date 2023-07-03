@@ -1,7 +1,7 @@
 import tensorflow as tf
 import numpy as np
-from src.RCWA.Modes import Modes
-from src.RCWA.Utils import block
+from RCWA.Modes import Modes
+from RCWA.Utils import block
 from scipy import linalg as LA
 import matplotlib.pyplot as plt
 # SciPy's linalg module for solving eigen problem
