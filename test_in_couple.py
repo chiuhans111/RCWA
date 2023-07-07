@@ -13,10 +13,10 @@ import matplotlib.pyplot as plt
 # “Effective grating theory for resonance domain surface-relief diffraction gratings,”
 # J. Opt. Soc. Am. A, vol. 22, no. 6, p. 1115, Jun. 2005, doi: 10.1364/JOSAA.22.001115.
 
-period = 0.583
+period = 0.357
 
 n1 = 1
-n2 = 1.46
+n2 = 2
 
 er1 = n1**2
 er2 = n2**2
@@ -30,7 +30,7 @@ modes = Modes(domain)
 modes.set_harmonics(10, 0)
 
 
-def run(AOI, slant_angle, depth):
+def run(AOI):
     modes.set_incidence_AOI_POI(
         AOI=np.deg2rad(AOI),
         POI=np.deg2rad(0))
@@ -50,8 +50,8 @@ def run(AOI, slant_angle, depth):
     # Create Device
     S = SlantGrating(modes, sbuilder, n1=n1, n2=n2,
                      ff=0.5,
-                     slant_angle=np.deg2rad(slant_angle),
-                     depth=depth,
+                     slant_angle=np.deg2rad(35),
+                     depth=0.8,
                      dff=-1,
                      dz=0.02)
 
@@ -61,28 +61,28 @@ def run(AOI, slant_angle, depth):
     # Incidence
     delta = (modes.mx == 0)*(modes.my == 0)
 
-    # Set amplitudes for s and p polarizations
-    pol_angle = np.deg2rad(90)
+    def incidence(S, pol_angle_deg):
+        # Set amplitudes for s and p polarizations
+        pol_angle = np.deg2rad(pol_angle_deg)
 
-    amp_s = tf.sin(pol_angle)  # 90 degree
-    amp_p = tf.cos(pol_angle)  # 0 degree
+        amp_s = tf.sin(pol_angle)  # 90 degree, TE
+        amp_p = tf.cos(pol_angle)  # 0 degree, TM
 
-    # Calculate the polarization vector based on s and p amplitudes
-    pol = modes.pol_vec_p * amp_p + modes.pol_vec_s * amp_s
+        # Calculate the polarization vector based on s and p amplitudes
+        pol = modes.pol_vec_p * amp_p + modes.pol_vec_s * amp_s
 
-    # Calculate the incident electric field components
-    Einc = tf.cast(
-        tf.concat([delta*pol[0], delta*pol[1]], 0), tf.dtypes.complex128)
-    Einc_z = delta*pol[2]
+        # Calculate the incident electric field components
+        Einc = tf.cast(
+            tf.concat([delta*pol[0], delta*pol[1]], 0), tf.dtypes.complex128)
+        Einc_z = delta*pol[2]
 
-    # Calculate the incident intensity
-    Iinc = tf.reduce_sum(np.abs(Einc)**2)+tf.reduce_sum(np.abs(Einc_z)**2)
+        # Calculate the incident intensity
+        Iinc = tf.reduce_sum(np.abs(Einc)**2)+tf.reduce_sum(np.abs(Einc_z)**2)
 
-    # Calculate the longitudinal wave vector components
-    kz_r = tf.sqrt((n1**2-modes.kx**2-modes.ky**2).astype('complex'))
-    kz_t = tf.sqrt((n2**2-modes.kx**2-modes.ky**2).astype('complex'))
+        # Calculate the longitudinal wave vector components
+        kz_r = tf.sqrt((n1**2-modes.kx**2-modes.ky**2).astype('complex'))
+        kz_t = tf.sqrt((n2**2-modes.kx**2-modes.ky**2).astype('complex'))
 
-    def incidence(S):
         # Calculate the electric field components using the scattering matrix
         Eref = tf.reshape((S.value[0]@Einc[:, None]), [2, -1])
         Etrn = tf.reshape((S.value[2]@Einc[:, None]), [2, -1])
@@ -101,47 +101,38 @@ def run(AOI, slant_angle, depth):
 
         return Eref, Etrn, R, T
 
-    Eref, Etrn, R, T = incidence(Sglobal)
-    # Reshape the reflection and transmission coefficients into 2D arrays
-    R_2d = tf.reshape(R, [modes.num_modes_y, modes.num_modes_x])
-    T_2d = tf.reshape(T, [modes.num_modes_y, modes.num_modes_x])
+    Eref, Etrn, R_TM, T_TM = incidence(Sglobal, 0)
+    Eref, Etrn, R_TE, T_TE = incidence(Sglobal, 90)
 
-    # Plot the reflection and transmission coefficients
-    # plt.subplot(2, 1, 1)
-    # plt.title("Reflection")
-    # plt.imshow(R_2d, cmap='jet', vmin=0)
-    # plt.colorbar()
-    # plt.subplot(2, 1, 2)
-    # plt.title("Transmission")
-    # plt.imshow(T_2d, cmap='jet', vmin=0)
-    # plt.colorbar()
-    # plt.tight_layout()
-    # plt.show()
+    print(np.sum(R_TM+T_TM))
+    print("Error:", 1-np.sum(R_TM+T_TM))
+    print(np.sum(R_TE+T_TE))
+    print("Error:", 1-np.sum(R_TE+T_TE))
 
-    # Calculate the sum of reflection and transmission coefficients
-    print(np.sum(R+T))
-    print("Error:", 1-np.sum(R+T))
-
-    return R, T
+    return R_TM, T_TM, R_TE, T_TE
 
 
 plt.figure(figsize=(6, 4), dpi=150)
 
-for case in range(3):
-    slant_angle = [23.289, 12.55, 0][case]
-    depth = [1.219, 1.309, 1.346][case]
-    label = ['Case a', 'Case b', 'Case c'][case]
-    ts = []
-    AOIs = np.linspace(-20, 50, 36)
-    for AOI in AOIs:
-        R, T = run(AOI, slant_angle, depth)
-        ts.append(np.sum(T * (modes.mx == -1) * (modes.my == 0)))
-    plt.plot(AOIs, ts, label=label)
-    np.save(f'./save/slant_{label}',ts)
+
+AOIs = np.linspace(-30, 30, 21)
+tm = []
+te = []
+for AOI in AOIs:
+    R_TM, T_TM, R_TE, T_TE = run(AOI)
+    tm.append(np.sum(T_TM * (modes.mx == -1) * (modes.my == 0)))
+    te.append(np.sum(T_TE * (modes.mx == -1) * (modes.my == 0)))
+
+plt.plot(AOIs, tm, label='TM')
+plt.plot(AOIs, te, label='TE')
+
+np.save(f'./save/in_couple_tm', tm)
+np.save(f'./save/in_couple_te', te)
+
 plt.grid()
 plt.ylabel('Diffraction Efficiency, 1st order')
 plt.xlabel('Incidence Angle')
 plt.legend()
 plt.tight_layout()
+plt.savefig('./result/in_coupling.png')
 plt.show()
-

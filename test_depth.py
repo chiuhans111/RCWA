@@ -48,13 +48,13 @@ def run(depth):
     Sglobal = Sref
 
     # Create Device
-    if depth>0:
+    if depth > 0:
         S = SlantGrating(modes, sbuilder, n1=n1, n2=n2,
-                        ff=0.5,
-                        slant_angle=np.deg2rad(0),
-                        depth=depth,
-                        dff=-1,
-                        dz=depth/20)
+                         ff=0.5,
+                         slant_angle=np.deg2rad(0),
+                         depth=depth,
+                         dff=-1,
+                         dz=depth/20)
 
         Sglobal = Sglobal @ S
 
@@ -127,15 +127,21 @@ def run(depth):
     return R, T
 
 
-plt.figure(figsize=(6, 5), dpi=150)
+plt.figure(figsize=(5, 4), dpi=150)
 t0 = []
 t1 = []
-depths = np.linspace(0, 4*period, 61)
+depths = np.linspace(0, 4*period, 51)
 for depth in depths:
     R, T = run(depth)
     t0.append(np.sum(T * (modes.mx == 0) * (modes.my == 0)))
     t1.append(np.sum(T * (modes.mx == -1) * (modes.my == 0)))
-plt.plot(depths/period, t0)
-plt.plot(depths/period, t1)
+plt.plot(depths/period, t0, label='0th order')
+plt.plot(depths/period, t1, label='1st order')
+plt.ylabel('Diffraction Efficiency')
+plt.xlabel('Depth / Period')
+plt.legend()
 plt.grid()
+plt.tight_layout()
+np.save('./save/depth_t0', t0)
+np.save('./save/depth_t1', t1)
 plt.show()
