@@ -35,17 +35,17 @@ class Modes:
         # Ensure the mode ID is within the valid range
         self.mx, self.my = self.ind2mode(np.arange(self.num_modes))
 
-    def set_incidence_AOI_POI(self, AOI, POI):
+    def set_incidence_AOI_POI(self, AOI, POI, n1=1):
         self.set_incidence(
             k0x=np.sin(AOI) * np.cos(POI),  # x-component of the wave vector
             k0y=np.sin(AOI) * np.sin(POI),  # y-component of the wave vector
-            k0z=np.cos(AOI)  # z-component of the wave vector
+            k0z=np.cos(AOI), n1=n1  # z-component of the wave vector
         )
 
-    def set_incidence(self, k0x, k0y, k0z):
-        self.k0x = k0x
-        self.k0y = k0y
-        self.k0z = k0z
+    def set_incidence(self, k0x, k0y, k0z, n1=1):
+        self.k0x = k0x * n1
+        self.k0y = k0y * n1
+        self.k0z = k0z * n1
 
         # Polarization related ------------------------------------------------
         k0v = np.array([k0x, k0y, k0z])  # Wave vector
