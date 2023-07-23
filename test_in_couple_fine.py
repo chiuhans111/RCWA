@@ -120,7 +120,9 @@ te = []
 tm2 = []
 te2 = []
 
+simulations = 0
 for AOI in AOIs:
+    simulations+=1
     R_TM, T_TM, R_TE, T_TE = run(AOI, dff=-1)
     tm.append(np.sum(T_TM * (modes.mx == -1) * (modes.my == 0)))
     te.append(np.sum(T_TE * (modes.mx == -1) * (modes.my == 0)))
@@ -130,6 +132,7 @@ for AOI in AOIs:
 
 tock = time.time()
 print("seconds", tock-tick)
+print("simulations", simulations)
 
 np.save(f'./save/in_couple_tm_fine', tm)
 np.save(f'./save/in_couple_te_fine', te)
