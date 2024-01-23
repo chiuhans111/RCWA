@@ -41,6 +41,48 @@ Experiment with different parameters and explore the visualization of various mo
 ## Known Issues
 - Unstable, numerical error when using large harmonics, period=wavelength cases.
 
+## Examples
+*results obtained from RSoft DiffractMOD and our implementation of the RCWA method.*
+
+### Traingular grating transmission diffraction efficiency
+
+
+![image](https://github.com/chiuhans111/RCWA/assets/13620115/fbbcd056-4422-4563-a392-2c8f406a7507)
+
+The simulations were conducted under the following conditions: 
+a wavelength of 530 nm, incidence angle of 30 degrees,
+grating period of 530 nm, groove depth ranges from 0 to 4 times the period (2120 nm), 
+refractive index of 1.581 for both grating and substrate, symmetrical triangular groove shape, and TE polarization. 
+
+Error comparison, RMSE: 0.276% 
+
+![image](https://github.com/chiuhans111/RCWA/assets/13620115/07340c6b-d19c-4e62-9387-4a7a0160cb09)
+
+### Slanted triangular grating transmission diffraction efficiency
+
+![image](https://github.com/chiuhans111/RCWA/assets/13620115/2c12297b-7572-42fd-991f-648f9ec07520)
+
+The simulations were conducted under the following conditions: 
+a wavelength of 530 nm, incidence angle ranges from -20 to 50 degrees, grating period of 583 nm, 
+refractive index of 1.46 for both grating and substrate, triangular groove shape, and TE polarization. 
+
+Three grating shapes are simulated; 
+in case a, the depth is 1.219 nm, with a slant angle of 23.289 degrees; 
+in case b, the depth is 1.309 nm, with a slant angle of 12.55 degrees; 
+in case c, the depth is 1.346 nm, with symmetric triangular groove.
+
+RMSE: 0.262%
+
+### TE/TM transmission diffraction efficiency
+
+![image](https://github.com/chiuhans111/RCWA/assets/13620115/62487415-8b2e-4529-ab89-155ee33be86f)
+
+The simulations were conducted under a wavelength of 530 nm, incidence angle ranging from -30 to 30 degrees, 
+grating period of 357nm, groove depth of 800 nm, refractive index of 2.0 for both grating and substrate, triangular groove with 35 degrees of slant angle, and bot TM and TE polarization. 
+
+RMSE: 1.279%
+
+
 ## Future Direction
 
 The future direction of this project includes the integration of TensorFlow to improve performance 
