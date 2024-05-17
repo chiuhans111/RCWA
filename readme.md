@@ -14,7 +14,8 @@ The RCWA formulation is based on the following references:
 - EMPossible: The YouTube channel [EMPossible](https://www.youtube.com/@empossible1577) provides educational videos on electromagnetic principles, including a lecture titled "Lecture 19 (CEM) -- Formulation of Rigorous Coupled-Wave Analysis." This lecture provides a visual explanation of the RCWA formulation and can be viewed [here](https://www.youtube.com/watch?v=LEWTvwrYxiI&t=1s&ab_channel=EMPossible).
 
 ## Documentation (WIP)
-- [RCWA Formulation](/formulation/RCWA Formulation.md)
+- [RCWA Formulation](/formulation/RCWA%20Formulation.md)
+
 
 ## Directory Structure
 - `formulation/`: Contains the formulation document in both docx and pdf formats, providing a detailed explanation of the RCWA method.
