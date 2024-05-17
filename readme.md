@@ -1,5 +1,6 @@
 # RCWA (Rigorous Coupled Wave Analysis)
 
+## Introduction
 This repository contains the implementation of Rigorous Coupled Wave Analysis (RCWA), 
 a numerical method used to analyze the scattering and diffraction of electromagnetic waves by periodic structures.
 It includes a detailed formulation document, code, and examples.
@@ -12,8 +13,10 @@ The RCWA formulation is based on the following references:
 
 - EMPossible: The YouTube channel [EMPossible](https://www.youtube.com/@empossible1577) provides educational videos on electromagnetic principles, including a lecture titled "Lecture 19 (CEM) -- Formulation of Rigorous Coupled-Wave Analysis." This lecture provides a visual explanation of the RCWA formulation and can be viewed [here](https://www.youtube.com/watch?v=LEWTvwrYxiI&t=1s&ab_channel=EMPossible).
 
-## Directory Structure
+## Documentation (WIP)
+- [RCWA Formulation](formulation/RCWA Formulation.md)
 
+## Directory Structure
 - `formulation/`: Contains the formulation document in both docx and pdf formats, providing a detailed explanation of the RCWA method.
 - `notebook/rcwa_v1.ipynb`: Includes the code implementation of the RCWA method, achieving energy conservation (T+R=1) and providing visualization of some modes.
 
