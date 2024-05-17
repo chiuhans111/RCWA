@@ -5,9 +5,13 @@ This is a documentation to provide reference to important derivation, and help p
 
 ## Maxwell Equation
 $$\nabla\cdot\vec D=\rho$$
+
 $$\nabla\cdot\vec B=0$$
+
 $$\nabla\times\vec E=-{\partial\vec B\over\partial t}$$
+
 $$\nabla\times\vec H=\vec J+{\partial\vec D\over\partial t}$$
+
 - $\vec D$ : Electric displacement
 - $\vec B$ : Magnetic flux density
 - $\vec H$ : Magnetic field vector (`H`)
@@ -18,16 +22,20 @@ $$\nabla\times\vec H=\vec J+{\partial\vec D\over\partial t}$$
 
 ### Linear material assumption 
 $$\vec D=\varepsilon\vec E$$
+
 $$\vec B=\mu\vec H$$
+
 - $\varepsilon$ : Permittivity
 - $\mu$ : Permeability
 
 ###  Source-free assumption
 $$\rho=0$$
+
 $$J=0$$
 
 ### Monochromatic assumption
 $$\vec E\propto e^{-i\omega t}$$
+
 $$\vec H\propto e^{-i\omega t}$$
 - $\omega$ : Angular frequency
 
@@ -40,6 +48,7 @@ $$\tilde{\vec H}=i\sqrt{\mu_0\over\varepsilon_0}\vec H$$
 - $\mu_0$ : Free-space permeability
 
 $$\nabla\times\vec E=k_0\mu_r\tilde{\vec H}$$
+
 $$\nabla\times\tilde{\vec H}=k_0\varepsilon_r\vec E$$
 
 - $k_0$ : Free-space wave number $2\pi\over\lambda_0$
@@ -69,6 +78,7 @@ $$\nabla\times\tilde{\vec H}=k_0\varepsilon_r\vec E$$
 
 ## Plane wave decomposition
 $$\vec E(x,y;z)=\sum_{mn}\vec E(m,n;z)e^{i(k_x(m,n)x+k_y(m,n)y)}$$
+
 $$\tilde{\vec H}(x,y;z)=\sum_{mn}\vec H(m,n;z)e^{i(k_x(m,n)x+k_y(m,n)y)}$$
 
 - $\vec E(m,n;z)$ : Electric field coefficients
@@ -76,6 +86,7 @@ $$\tilde{\vec H}(x,y;z)=\sum_{mn}\vec H(m,n;z)e^{i(k_x(m,n)x+k_y(m,n)y)}$$
 - $m,n$ : Mode number, integer
 
 $$\varepsilon_r(x, y)=\sum_{mn}\varepsilon_r(m,n)e^{i(mG_xx+nG_yy)}$$
+
 $$\mu_r(x,y)=\sum_{mn}\mu_r(m,n)e^{i(mG_xx+nG_yy)}$$
 
 - $\varepsilon_r(m,n)$ : Permittivity coefficients
