@@ -5,14 +5,6 @@ This repository contains the implementation of Rigorous Coupled Wave Analysis (R
 a numerical method used to analyze the scattering and diffraction of electromagnetic waves by periodic structures.
 It includes a detailed formulation document, code, and examples.
 
-The RCWA formulation is based on the following references:
-
-- EMPossible: The website [EMPossible](https://empossible.net/) provides a formulation document titled "Formulation of Rigorous Coupled-Wave Analysis (RCWA)" that offers insights into the theoretical foundations and mathematical equations of the RCWA method. You can find the document [here](https://empossible.net/wp-content/uploads/2019/08/Lecture-7a-RCWA-Formulation.pdf).
-
-- R. C. Rumpf, "IMPROVED FORMULATION OF SCATTERING MATRICES FOR SEMI-ANALYTICAL METHODS THAT IS CONSISTENT WITH CONVENTION," PIER B, vol. 35, pp. 241–261, 2011. This research paper by R. C. Rumpf presents an improved formulation of scattering matrices for semi-analytical methods, including RCWA. The paper offers valuable insights into the consistent formulation of scattering matrices and can be accessed [here](https://doi.org/10.2528/PIERB11083107).
-
-- EMPossible: The YouTube channel [EMPossible](https://www.youtube.com/@empossible1577) provides educational videos on electromagnetic principles, including a lecture titled "Lecture 19 (CEM) -- Formulation of Rigorous Coupled-Wave Analysis." This lecture provides a visual explanation of the RCWA formulation and can be viewed [here](https://www.youtube.com/watch?v=LEWTvwrYxiI&t=1s&ab_channel=EMPossible).
-
 ## Documentation (WIP)
 - [RCWA Documentation](https://github.com/chiuhans111/RCWA/wiki)
 
@@ -26,7 +18,7 @@ The RCWA formulation is based on the following references:
 - Dependencies:
   - NumPy (for numerical computations)
   - Matplotlib (for plotting)
-  - SciPy (for solving eigen problems)
+  - SciPy (for solving eigenproblems)
 
 ## Formulation
 The document available in the `formulation/` directory provides derivations of the mathematical equations, and implementation details of the RCWA method.
@@ -99,6 +91,16 @@ If you have ideas, suggestions, or would like to contribute to the project, plea
 I am an electro-optical student who has a strong passion for optics. 
 I developed this RCWA implementation as part of my research work.
 If you have any questions, suggestions, or would like to collaborate on optical research projects, feel free to contact me.
+
+## References
+The RCWA formulation is based on the following references:
+
+- EMPossible: The website [EMPossible](https://empossible.net/) provides a formulation document titled "Formulation of Rigorous Coupled-Wave Analysis (RCWA)" that offers insights into the theoretical foundations and mathematical equations of the RCWA method. You can find the document [here](https://empossible.net/wp-content/uploads/2019/08/Lecture-7a-RCWA-Formulation.pdf).
+
+- R. C. Rumpf, "IMPROVED FORMULATION OF SCATTERING MATRICES FOR SEMI-ANALYTICAL METHODS THAT IS CONSISTENT WITH CONVENTION," PIER B, vol. 35, pp. 241–261, 2011. This research paper by R. C. Rumpf presents an improved formulation of scattering matrices for semi-analytical methods, including RCWA. The paper offers valuable insights into the consistent formulation of scattering matrices and can be accessed [here](https://doi.org/10.2528/PIERB11083107).
+
+- EMPossible: The YouTube channel [EMPossible](https://www.youtube.com/@empossible1577) provides educational videos on electromagnetic principles, including a lecture titled "Lecture 19 (CEM) -- Formulation of Rigorous Coupled-Wave Analysis." This lecture provides a visual explanation of the RCWA formulation and can be viewed [here](https://www.youtube.com/watch?v=LEWTvwrYxiI&t=1s&ab_channel=EMPossible).
+
 
 ## License
 
