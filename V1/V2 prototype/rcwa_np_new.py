@@ -194,11 +194,6 @@ def get_intensity(Ex, Ey, kx, ky, kz):
     return I * valid
 
 
-def get_coefficient(Ex, Ey, kx, ky, n):
-    kz = get_kz(n, kx, ky)
-    I = get_intensity(Ex, Ey, kx, ky, kz) * np.real(kz)
-    return I
-
 
 def break_field(c1p, c1m, c3p, c3m, A, B):
     # this function breaks the scatter matrix,
