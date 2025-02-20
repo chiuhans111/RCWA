@@ -6,6 +6,7 @@ def homogeneous_isotropic_matrix(er, ur, kx, ky):
     W = np.eye(kx.shape[0]*2)
     kz = np.sqrt((n2-kx**2-ky**2).astype('complex'))
     LAM = np.concatenate([1j * kz, 1j * kz], axis=0)
+    LAM = np.concatenate([LAM, -LAM], axis=0)
 
     V11 = np.diag(kx*ky/kz)
     V12 = np.diag((n2-kx**2)/kz)

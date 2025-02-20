@@ -54,6 +54,7 @@ zs, fields = simulation.get_internal_field(dz=0.01)
 xs, ys, EX, EY = simulation.render_fields(200, 1, fields)
 plt.figure()
 v = np.max(np.abs(EX))
+v = 1
 plt.pcolormesh(xs, zs, np.real(EX[:, 0, :]), vmin=-v, vmax=v)
 plt.axis('equal')
 plt.show()

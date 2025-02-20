@@ -59,7 +59,6 @@ def build_scatter_from_omega(omega, W0, k0L):
     B = np.diag(np.exp(-LAM*k0L/2)) @ WiW0
     return build_scatter_from_AB(A, B), W, LAM
 
-import matplotlib.pyplot as plt
 def build_scatter_from_WV(W, V, W0, V0, LAM, k0L):
     WiW0 = np.linalg.solve(W, W0)
     ViV0 = np.linalg.solve(V, V0)
@@ -95,48 +94,59 @@ def build_scatter_from_homo(er, ur, kx, ky, W0, k0L):
         W[:n_half, :n_half],
         W[n_half:, :n_half],
         W0[:n_half, :n_half],
-        W0[n_half:, :n_half], LAM, k0L)
+        W0[n_half:, :n_half], LAM[:n_half], k0L)
+
+    # build scatter matrix
+    # LAM, W = np.linalg.eig(omega)
+    # order = np.argsort(-np.imag(LAM)*1000+np.real(LAM))
+    # LAM = LAM[order]
+    # W = W[:, order]
+    WiW0 = np.linalg.solve(W, W0)
+    A = np.diag(np.exp(LAM*k0L/2)) @ WiW0
+    B = np.diag(np.exp(-LAM*k0L/2)) @ WiW0
+    return build_scatter_from_AB(A, B), W, LAM
 
 
 def build_scatter_from_omega2(EH_mat, HE_mat, W0, k0L):
     # build scatter matrix
     omega2 = EH_mat @ HE_mat
     LAM2, W = np.linalg.eig(omega2)
+    # LAM = np.conj(np.sqrt(LAM2))
     LAM = np.sqrt(LAM2)
     V = HE_mat @ W @ np.diag(1/LAM)
     n_half = W0.shape[0]//2
     return build_scatter_from_WV(W, V, W0[:n_half, :n_half],  W0[n_half:, :n_half], LAM, k0L)
 
 
-# def build_scatter_side(er, ur, modes, W0, transmission_side=False):
-#     # build scatter matrix for reflection and transmission side
-#     LAM, W = homogeneous_isotropic_matrix(er, ur, modes.kx, modes.ky)
-#     if transmission_side:
-#         A = W0
-#         B = W
-#     else:
-#         A = W
-#         B = W0
-#     return build_scatter_from_AB(A, B), W
-
-
 def build_scatter_side(er, ur, kx, ky, W0, transmission_side=False):
     # build scatter matrix for reflection and transmission side
     LAM, W = homogeneous_isotropic_matrix(er, ur, kx, ky)
-    n_half = kx.shape[0]*2
-    WiW0 = np.linalg.solve(W[:n_half, :n_half], W0[:n_half, :n_half])
-    ViV0 = np.linalg.solve(W[n_half:, :n_half], W0[n_half:, :n_half])
-    A = WiW0 + ViV0
-    B = WiW0 - ViV0
-    Ai = np.linalg.inv(A)
-    s11 = B @ Ai
-    s12 = 0.5 * (A-s11@B)
-    s21 = 2 * Ai
-    s22 = -Ai@B
-
     if transmission_side:
-        s11, s12, s21, s22 = s22, s21, s12, s11
-    return (s11, s12, s21, s22), W, LAM
+        A = W0
+        B = W
+    else:
+        A = W
+        B = W0
+    return build_scatter_from_AB(A, B), W, LAM
+
+
+# def build_scatter_side(er, ur, kx, ky, W0, transmission_side=False):
+#     # build scatter matrix for reflection and transmission side
+#     LAM, W = homogeneous_isotropic_matrix(er, ur, kx, ky)
+#     n_half = kx.shape[0]*2
+#     WiW0 = np.linalg.solve(W[:n_half, :n_half], W0[:n_half, :n_half])
+#     ViV0 = np.linalg.solve(W[n_half:, :n_half], W0[n_half:, :n_half])
+#     A = WiW0 + ViV0
+#     B = WiW0 - ViV0
+#     Ai = np.linalg.inv(A)
+#     s11 = B @ Ai
+#     s12 = 0.5 * (A-s11@B)
+#     s21 = 2 * Ai
+#     s22 = -Ai@B
+
+#     if transmission_side:
+#         s11, s12, s21, s22 = s22, s21, s12, s11
+#     return (s11, s12, s21, s22), W, LAM
 
 
 def get_field_incide(c1p, c1m, c3p, c3m, A, B):
