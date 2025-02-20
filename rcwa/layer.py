@@ -1,7 +1,6 @@
 import numpy as np
 from .scattermatrix import *
-from .matrix_equation import *
-
+from .modes import *
 
 class Layer:
     def __init__(self, **kwargs):

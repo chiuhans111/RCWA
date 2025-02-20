@@ -1,28 +1,35 @@
 from rcwa import rcwa
 import numpy as np
+import matplotlib.pyplot as plt
 
 # step1 build your structure
+x = np.linspace(-1, 1, 101)
+y = np.linspace(-1, 1, 101)
+x, y = np.meshgrid(x, y)
+
+mask = x<0
+
 layers = [
-    rcwa.Layer(n=1.5),
-    rcwa.Layer(n=2, t=1),
-    rcwa.Layer(n=np.random.random([10, 10])+1, t=1),
-    rcwa.Layer(er=np.random.random([10, 10])+1, t=1),
-    rcwa.Layer(n=1.5, t=1),
+    rcwa.Layer(n=2),
+    rcwa.Layer(n=2, t=2),
+    # rcwa.Layer(n=mask+1, t=1),
+    # rcwa.Layer(er=mask+1, t=1),
+    rcwa.Layer(n=1, t=2),
     rcwa.Layer(n=1),
 ]
 
 # define modes
-AOI = np.radians(0)
+AOI = np.radians(20)
 POI = np.radians(0)
 
 modes = rcwa.Modes(
     wavelength=0.532,
     kx0=0,
     ky0=0,
-    period_x=1,
-    period_y=1,
-    harmonics_x=10,
-    harmonics_y=10
+    period_x=2,
+    period_y=2,
+    harmonics_x=5,
+    harmonics_y=0
 )
 
 modes.set_direction(
@@ -30,9 +37,23 @@ modes.set_direction(
     ky0=np.sin(POI) * np.sin(AOI)
 )
 
+# step3 run your simulation 
 simulation = rcwa.Simulation(
     modes=modes,
-    layers=layers
+    layers=layers,
+    keep_modes=True
 )
 
-# step3 run your simulation
+R, T = simulation.run(Ex=1, Ey=0).get_efficiency()
+plt.figure()
+plt.plot(R)
+plt.plot(T)
+
+
+zs, fields = simulation.get_internal_field(dz=0.01)
+xs, ys, EX, EY = simulation.render_fields(200, 1, fields)
+plt.figure()
+v = np.max(np.abs(EX))
+plt.pcolormesh(xs, zs, np.real(EX[:, 0, :]), vmin=-v, vmax=v)
+plt.axis('equal')
+plt.show()

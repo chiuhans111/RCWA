@@ -1,6 +1,6 @@
 import numpy as np
 from .utils import block_matrix
-from .common_matrix_equation import homogeneous_isotropic_matrix
+from .isotropic import homogeneous_isotropic_matrix
 
 
 def star_product(A, B):
@@ -59,28 +59,43 @@ def build_scatter_from_omega(omega, W0, k0L):
     B = np.diag(np.exp(-LAM*k0L/2)) @ WiW0
     return build_scatter_from_AB(A, B), W, LAM
 
-
+import matplotlib.pyplot as plt
 def build_scatter_from_WV(W, V, W0, V0, LAM, k0L):
     WiW0 = np.linalg.solve(W, W0)
     ViV0 = np.linalg.solve(V, V0)
     A = WiW0 + ViV0
     B = WiW0 - ViV0
-    X = np.exp(LAM*k0L)
+    X = np.diag(np.exp(LAM*k0L))
     AiXB = np.linalg.solve(A, X@B)
     AiXA = np.linalg.solve(A, X@A)
     XBAiXB = X - B @ AiXB
     XBAiXA = X - B @ AiXA
 
     AXBAXB = A-XBAiXB
+
     s11 = np.linalg.solve(AXBAXB, XBAiXA-B)
     s12 = np.linalg.solve(AXBAXB, X@(A-B@np.linalg.solve(A, B)))
     s21 = s12
     s22 = s11
-    return (s11, s12, s21, s22), W,
+
+    W = block_matrix([
+        [W, W],
+        [V, -V]
+    ])
+
+    LAM = np.concatenate([LAM, -LAM], axis=0)
+
+    return (s11, s12, s21, s22), W, LAM
+
 
 def build_scatter_from_homo(er, ur, kx, ky, W0, k0L):
     LAM, W = homogeneous_isotropic_matrix(er, ur, kx, ky)
-    return build_scatter_from_WV(W[0, 0], W[1, 0], W0[0, 0],  W0[1, 0], LAM, k0L)
+    n_half = kx.shape[0]*2
+    return build_scatter_from_WV(
+        W[:n_half, :n_half],
+        W[n_half:, :n_half],
+        W0[:n_half, :n_half],
+        W0[n_half:, :n_half], LAM, k0L)
 
 
 def build_scatter_from_omega2(EH_mat, HE_mat, W0, k0L):
@@ -89,7 +104,8 @@ def build_scatter_from_omega2(EH_mat, HE_mat, W0, k0L):
     LAM2, W = np.linalg.eig(omega2)
     LAM = np.sqrt(LAM2)
     V = HE_mat @ W @ np.diag(1/LAM)
-    return build_scatter_from_WV(W, V, W0[0, 0],  W0[1, 0], LAM, k0L)
+    n_half = W0.shape[0]//2
+    return build_scatter_from_WV(W, V, W0[:n_half, :n_half],  W0[n_half:, :n_half], LAM, k0L)
 
 
 # def build_scatter_side(er, ur, modes, W0, transmission_side=False):
@@ -107,10 +123,9 @@ def build_scatter_from_omega2(EH_mat, HE_mat, W0, k0L):
 def build_scatter_side(er, ur, kx, ky, W0, transmission_side=False):
     # build scatter matrix for reflection and transmission side
     LAM, W = homogeneous_isotropic_matrix(er, ur, kx, ky)
-    n_modes = W.shape[0]//2
-
-    WiW0 = np.linalg.solve(W[:n_modes, :n_modes], W0[:n_modes, :n_modes])
-    ViV0 = np.linalg.solve(W[n_modes:, :n_modes], W0[n_modes:, :n_modes])
+    n_half = kx.shape[0]*2
+    WiW0 = np.linalg.solve(W[:n_half, :n_half], W0[:n_half, :n_half])
+    ViV0 = np.linalg.solve(W[n_half:, :n_half], W0[n_half:, :n_half])
     A = WiW0 + ViV0
     B = WiW0 - ViV0
     Ai = np.linalg.inv(A)

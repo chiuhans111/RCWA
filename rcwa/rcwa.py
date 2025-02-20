@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 from .utils import block_matrix
 from .modes import Modes
 from .layer import Layer
-from .matrix_equation import homogeneous_isotropic_matrix
 from .scattermatrix import star_product, get_field_incide
 
 
@@ -28,7 +27,7 @@ class Simulation:
         Sref, Wref, LAMref = layers[0].build_scatter_side(modes)
         Stra, Wtra, LAMtra = layers[-1].build_scatter_side(
             modes, transmission_side=True)
-
+        
         Sglobal = Sref
         if keep_modes:
             mode_matrices = [[Wref, LAMref, 0]]
@@ -61,12 +60,16 @@ class Simulation:
         self.kz_ref = get_kz(n_ref, kx, ky)
         self.kz_tra = get_kz(n_tra, kx, ky)
 
+        self.Wref = Wref
+        self.Wtra = Wtra
+
     def run(self, Ex, Ey):
         modes = self.modes
         delta = (modes.mx == 0) * (modes.my == 0)
         self.C_inc = np.concatenate([Ex*delta, Ey*delta], axis=0)[:, None]
         self.C_ref = self.Sglobal[0] @ self.C_inc
         self.C_tra = self.Sglobal[2] @ self.C_inc
+        return self
 
     def get_internal_field(self, dz=0.05):
         n_modes = self.modes.n_modes
@@ -144,8 +147,8 @@ class Simulation:
             ],
         ], axis1=3, axis2=2)
 
-        px = (np.arange(points_x)/points_x)*self.modes.pitch_x
-        py = (np.arange(points_y)/points_y)*self.modes.pitch_y
+        px = (np.arange(points_x)/points_x)*self.modes.period_x
+        py = (np.arange(points_y)/points_y)*self.modes.period_y
         px, py = np.meshgrid(px, py)
 
         kx0 = self.modes.kx0
@@ -159,7 +162,7 @@ class Simulation:
         EY = np.fft.ifft2(EY) * np.exp(1j*((kx0*px+ky0*py) * k0)
                                        )[None] * points_x * points_y
 
-        return EX, EY
+        return px, py, EX, EY
     
     def get_efficiency(self):
         n_modes = self.modes.n_modes
