@@ -16,7 +16,7 @@ class Layer:
             t (float): Thickness of the layer.
 
         n, er, ur Can be a scalar for homogeneous, a matrix with shape [NY, NX] for isotropic, 
-        [NY, NX, 3] for diagonal anisotropic, or [NX, NY, 3, 3] for anisotropic cases. 
+        [3, NY, NX] for diagonal anisotropic, or [3, 3, NX, NY] for anisotropic cases. 
         If NX=NY=1, it is assumed to be homogeneous.
 
         ur is assumed to be 1 if not given
@@ -36,15 +36,17 @@ class Layer:
             if self.er.ndim == 4:
                 if np.isscalar(self.ur):
                     self.ur = np.ones(self.er.shape[:2])[
-                        :, :, None, None] * np.eye(3)[None, None] * self.ur
+                        None, None] * np.eye(3)[:, :, None, None] * self.ur
 
     def build_scatter_side(self, modes: Modes, transmission_side=False):
-        logger.info(f"building {'transmission' if transmission_side else 'reflection'} side scatter matrix, er={self.er}, ur={self.ur}")
+        logger.info(
+            f"building {'transmission' if transmission_side else 'reflection'} side scatter matrix, er={self.er}, ur={self.ur}")
         return build_scatter_side(self.er, self.ur, modes.kx, modes.ky, modes.W0, transmission_side=transmission_side)
 
     def build_scatter(self, modes: Modes):
         if np.isscalar(self.er):
-            logger.info(f'building homogeneous layer, er={self.er}, ur={self.ur}')
+            logger.info(
+                f'building homogeneous layer, er={self.er}, ur={self.ur}')
             return build_scatter_from_homo(self.er, self.ur, modes.kx, modes.ky, modes.W0, modes.k0 * self.t)
         if self.er.ndim == 2:
             logger.info('building isotropic layer')

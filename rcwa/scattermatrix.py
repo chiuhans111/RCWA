@@ -1,6 +1,7 @@
 import numpy as np
 from .utils import block_matrix, logger
 from .isotropic import homogeneous_isotropic_matrix
+import matplotlib.pyplot as plt
 
 
 def star_product(A, B):
@@ -59,20 +60,21 @@ def build_scatter_from_omega(omega, W0, k0L):
     B = np.diag(np.exp(-LAM*k0L/2)) @ WiW0
     return build_scatter_from_AB(A, B), W, LAM
 
+
 def build_scatter_from_WV(W, V, W0, V0, LAM, k0L):
     WiW0 = np.linalg.solve(W, W0)
     ViV0 = np.linalg.solve(V, V0)
-    
+
     A = WiW0 + ViV0
     B = WiW0 - ViV0
 
     X = np.diag(np.exp(LAM*k0L))
-    
+
     AiXB = np.linalg.solve(A, X@B)
     AiXA = np.linalg.solve(A, X@A)
 
-    XBAiXB = X - B @ AiXB
-    XBAiXA = X - B @ AiXA
+    XBAiXB = X @ B @ AiXB
+    XBAiXA = X @ B @ AiXA
 
     AXBAXB = A-XBAiXB
 
@@ -111,15 +113,15 @@ def build_scatter_from_homo(er, ur, kx, ky, W0, k0L):
     return build_scatter_from_AB(A, B), W, LAM
 
 
-# def build_scatter_from_omega2(EH_mat, HE_mat, W0, k0L):
-#     # build scatter matrix
-#     omega2 = EH_mat @ HE_mat
-#     LAM2, W = np.linalg.eig(omega2)
-#     # LAM = np.conj(np.sqrt(LAM2))
-#     LAM = np.sqrt(LAM2)
-#     V = HE_mat @ W @ np.diag(1/LAM)
-#     n_half = W0.shape[0]//2
-#     return build_scatter_from_WV(W, V, W0[:n_half, :n_half],  W0[n_half:, :n_half], LAM, k0L)
+def build_scatter_from_omega2(EH_mat, HE_mat, W0, k0L):
+    # build scatter matrix
+    omega2 = EH_mat @ HE_mat
+    LAM2, W = np.linalg.eig(omega2)
+    LAM = np.conj(np.sqrt(LAM2))
+    # LAM = np.sqrt(LAM2)
+    V = HE_mat @ W @ np.diag(1/LAM)
+    n_half = W0.shape[0]//2
+    return build_scatter_from_WV(W, V, W0[:n_half, :n_half],  W0[n_half:, :n_half], LAM, k0L)
 
 
 def build_scatter_side(er, ur, kx, ky, W0, transmission_side=False):

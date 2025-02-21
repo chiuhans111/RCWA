@@ -28,6 +28,8 @@ class Simulation:
         Stra, Wtra, LAMtra = layers[-1].build_scatter_side(
             modes, transmission_side=True)
         
+        
+        
         Sglobal = Sref
         if keep_modes:
             mode_matrices = [[Wref, LAMref, 0]]
@@ -35,10 +37,10 @@ class Simulation:
 
         for layer in layers[1:-1]:
             S, W, LAM = layer.build_scatter(modes)
-            Sglobal = star_product(Sglobal, S)
             if keep_modes:
                 scatter_mats.append((Sglobal, S))
                 mode_matrices.append([W, LAM, layer.t])
+            Sglobal = star_product(Sglobal, S)
 
         Sglobal = star_product(Sglobal, Stra)
         self.Sglobal = Sglobal
@@ -119,6 +121,7 @@ class Simulation:
                 modem = W[:, n_modes*2:] @ (
                     np.exp(LAM[n_modes*2:] * k0*(z-L))[:, None] * C2[n_modes*2:])
                 mode = modep + modem
+                # mode = W @ (np.exp(LAM * k0*z)[:, None] * C1)
                 fields.append(mode[:, 0])
                 zs.append(z+z0)
             z0 += L
@@ -133,17 +136,20 @@ class Simulation:
         fields = np.fft.ifftshift(np.reshape(
             fields, [len(fields), 4, n_modes_y, n_modes_x]), (2, 3))
 
+        half_y = (n_modes_y+1)//2
+        half_x = (n_modes_x+1)//2
+
         fields = block_matrix([
             [
-                fields[:, :, :n_modes_y//2, :n_modes_x//2],
-                np.zeros([len(fields), 4, n_modes_y//2, pad_x]),
-                fields[:, :, :n_modes_y//2, n_modes_x//2:],
+                fields[:, :, :half_y, :half_x],
+                np.zeros([len(fields), 4, half_y, pad_x]),
+                fields[:, :, :half_y, half_x:],
             ],
             [np.zeros([len(fields), 4, pad_y, points_x])],
             [
-                fields[:, :, n_modes_y//2:, :n_modes_x//2],
-                np.zeros([len(fields), 4, n_modes_y-n_modes_y//2, pad_x]),
-                fields[:, :, n_modes_y//2:, n_modes_x//2:],
+                fields[:, :, half_y:, :half_x],
+                np.zeros([len(fields), 4, n_modes_y-half_y, pad_x]),
+                fields[:, :, half_y:, half_x:],
             ],
         ], axis1=3, axis2=2)
 

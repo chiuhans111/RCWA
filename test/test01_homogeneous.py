@@ -11,17 +11,24 @@ x = np.linspace(-1, 1, 101)
 y = np.linspace(-1, 1, 101)
 x, y = np.meshgrid(x, y)
 
-mask = x<0
+mask = x < 0
+
+I_anisotropic = np.ones_like(x)[None, None] * np.eye(3)[:, :, None, None]
+# layers = [
+#     rcwa.Layer(n=1),
+#     rcwa.Layer(n=I_anisotropic, t=1),
+#     rcwa.Layer(n=I_anisotropic*2, t=1),
+#     rcwa.Layer(n=2),
+# ]
 
 layers = [
-    rcwa.Layer(n=1),
-    rcwa.Layer(n=1, t=2),
-    # rcwa.Layer(n=1, t=2),
+    rcwa.Layer(n=2),
+    rcwa.Layer(n=2, t=1),
+    rcwa.Layer(n=1, t=1),
     rcwa.Layer(n=1),
 ]
-
 # define modes
-AOI = np.radians(20)
+AOI = np.radians(45)
 POI = np.radians(0)
 
 modes = rcwa.Modes(
@@ -35,11 +42,11 @@ modes = rcwa.Modes(
 )
 
 modes.set_direction(
-    kx0=np.cos(POI) * np.sin(AOI), 
-    ky0=np.sin(POI) * np.sin(AOI)
+    kx0=np.cos(POI) * np.sin(AOI)*layers[0].n,
+    ky0=np.sin(POI) * np.sin(AOI)*layers[0].n
 )
 
-# step3 run your simulation 
+# step3 run your simulation
 simulation = rcwa.Simulation(
     modes=modes,
     layers=layers,
@@ -52,11 +59,11 @@ R, T = simulation.run(Ex=1, Ey=0).get_efficiency()
 # plt.plot(T)
 
 
-# zs, fields = simulation.get_internal_field(dz=0.01)
-# xs, ys, EX, EY = simulation.render_fields(200, 1, fields)
-# plt.figure()
-# v = np.max(np.abs(EX))
-# v = 1
-# plt.pcolormesh(xs, zs, np.real(EX[:, 0, :]), vmin=-v, vmax=v)
-# plt.axis('equal')
-# plt.show()
+zs, fields = simulation.get_internal_field(dz=0.01)
+xs, ys, EX, EY = simulation.render_fields(200, 1, fields)
+plt.figure()
+v = np.max(np.abs(EX))
+v = 1
+plt.pcolormesh(xs, zs, np.real(EX[:, 0, :]), vmin=-v, vmax=v)
+plt.axis('equal')
+plt.show()
