@@ -21,6 +21,13 @@ layers = [
     rcwa.Layer(n=2),
 ]
 
+"""
+TODO: debug,
+Depends on taking conjugate or not after the sqrt of eigen value for isotropic, 
+or diagonal anisotropic case, one of them will create singular matrix when the index is 1.
+One clue is that V matrix is not equal to V0 matrix...
+"""
+
 # define modes
 AOI = np.radians(45)
 POI = np.radians(0)
