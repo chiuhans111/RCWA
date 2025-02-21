@@ -3,13 +3,24 @@ import numpy as np
 import matplotlib.pyplot as plt
 import logging
 import sys
+logger = logging.getLogger("RCWA")
+logger.setLevel(logging.INFO)
+logger.addHandler(logging.StreamHandler(stream=sys.stdout))
 # step1 build your structure
+x = np.linspace(-1, 1, 101)
+y = np.linspace(-1, 1, 101)
+x, y = np.meshgrid(x, y)
+
+mask = x < 0
+
 layers = [
     rcwa.Layer(n=1),
-    rcwa.Layer(n=1, t=1),
+    rcwa.Layer(n=np.ones_like(x), t=1),
+    rcwa.Layer(n=np.array([[[1]], [[2]], [[2]]]), t=1),
     rcwa.Layer(n=2, t=1),
     rcwa.Layer(n=2),
 ]
+
 # define modes
 AOI = np.radians(45)
 POI = np.radians(0)
@@ -36,7 +47,7 @@ simulation = rcwa.Simulation(
     keep_modes=True
 )
 
-R, T = simulation.run(Ex=1, Ey=0).get_efficiency()
+R, T = simulation.run(Ex=1, Ey=1).get_efficiency()
 print(f"R = {R}")
 print(f"T = {T}")
 print(f"A = {1-R-T}")
@@ -44,6 +55,12 @@ print(f"A = {1-R-T}")
 zs, fields = simulation.get_internal_field(dz=0.01)
 xs, ys, EX, EY = simulation.render_fields(200, 1, fields)
 plt.figure()
+plt.subplot(1, 2, 1)
+plt.title("EX")
 plt.pcolormesh(xs, zs, np.real(EX[:, 0, :]), vmin=-1, vmax=1, cmap='RdBu')
+plt.axis('equal')
+plt.subplot(1, 2, 2)
+plt.title("EY")
+plt.pcolormesh(xs, zs, np.real(EY[:, 0, :]), vmin=-1, vmax=1, cmap='RdBu')
 plt.axis('equal')
 plt.show()

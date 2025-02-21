@@ -9,9 +9,10 @@ It includes a detailed formulation document, code, and examples.
 - [RCWA Documentation](https://github.com/chiuhans111/RCWA/wiki)
 
 ## Directory Structure
-- `formulation/`: Contains the formulation document in both docx and pdf formats, providing a detailed explanation of the RCWA method.
-- `notebook/rcwa_v1.ipynb`: Includes the code implementation of the RCWA method, achieving energy conservation (T+R=1) and providing visualization of some modes.
-
+- `formulation/`: 
+  - Contains the formulation document in both docx and pdf formats, providing a detailed explanation of the RCWA method.
+- `rcwa`: main package
+- `test`: tests and examples
 ## Requirements
 
 - Python 3.10
