@@ -1,6 +1,8 @@
 import numpy as np
 from .scattermatrix import *
 from .modes import *
+from .utils import logger
+
 
 class Layer:
     def __init__(self, **kwargs):
@@ -37,17 +39,22 @@ class Layer:
                         :, :, None, None] * np.eye(3)[None, None] * self.ur
 
     def build_scatter_side(self, modes: Modes, transmission_side=False):
+        logger.info(f"building {'transmission' if transmission_side else 'reflection'} side scatter matrix, er={self.er}, ur={self.ur}")
         return build_scatter_side(self.er, self.ur, modes.kx, modes.ky, modes.W0, transmission_side=transmission_side)
 
     def build_scatter(self, modes: Modes):
         if np.isscalar(self.er):
+            logger.info(f'building homogeneous layer, er={self.er}, ur={self.ur}')
             return build_scatter_from_homo(self.er, self.ur, modes.kx, modes.ky, modes.W0, modes.k0 * self.t)
         if self.er.ndim == 2:
+            logger.info('building isotropic layer')
             P, Q = build_omega2_isotropic(self.er, self.ur, modes)
             return build_scatter_from_omega2(P, Q, modes.W0, modes.k0*self.t)
         if self.er.ndim == 3:
+            logger.info('building diagonal anisotropic layer')
             P, Q = build_omega2_diagonal(self.er, self.ur, modes)
             return build_scatter_from_omega2(P, Q, modes.W0, modes.k0*self.t)
         if self.er.ndim == 4:
+            logger.info('building anisotropic layer')
             omega = build_omega(self.er, self.ur, modes)
             return build_scatter_from_omega(omega, modes.W0, modes.k0*self.t)

@@ -32,10 +32,9 @@ class Modes:
         self.harmonics_x = harmonics_x
         self.harmonics_y = harmonics_y
         self.mx, self.my, self.shape = get_modes(harmonics_x, harmonics_y)
+        self.n_modes = self.mx.size
         self.k0 = 2*np.pi / self.wavelength
         self.set_direction(kx0, ky0)
-        self.n_modes = self.mx.size
-
 
  
     def set_direction(self, kx0, ky0):
@@ -43,7 +42,6 @@ class Modes:
         self.ky0 = ky0
         self.kx = self.kx0 + self.gx * self.mx
         self.ky = self.ky0 + self.gy * self.my
-
         self.LAM0, self.W0 = homogeneous_isotropic_matrix(1, 1, self.kx, self.ky)
 
 

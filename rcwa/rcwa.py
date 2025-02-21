@@ -4,7 +4,7 @@ from .utils import block_matrix
 from .modes import Modes
 from .layer import Layer
 from .scattermatrix import star_product, get_field_incide
-
+from .utils import logger
 
 def get_kz(n, kx, ky):
     kz = np.sqrt((n**2-kx**2-ky**2).astype('complex'))
@@ -172,9 +172,9 @@ class Simulation:
         kz_tra = self.kz_tra
 
         # Compute diffraction efficiency
-        E_inc = self.Wref[:n_modes*2, :n_modes*2] @ self.C_inc
-        E_ref = self.Wref[:n_modes*2, n_modes*2:] @ self.C_ref
-        E_tra = self.Wtra[:n_modes*2, :n_modes*2] @ self.C_tra
+        E_inc = self.C_inc # self.Wref[:n_modes*2, :n_modes*2] @ self.C_inc
+        E_ref = self.C_ref # self.Wref[:n_modes*2, n_modes*2:] @ self.C_ref
+        E_tra = self.C_tra # self.Wtra[:n_modes*2, :n_modes*2] @ self.C_tra
 
         I_inc = get_intensity(E_inc[:n_modes, 0],
                               E_inc[n_modes:, 0], kx, ky, kz_ref)
@@ -186,6 +186,9 @@ class Simulation:
         I = np.sum(I_inc)
         R = I_ref / I
         T = I_tra / I * np.real(kz_tra) / np.real(kz_ref)
+        logger.info(f'R = {np.sum(R)}')
+        logger.info(f'T = {np.sum(T)}')
+        logger.info(f'A = {1-np.sum(R)-np.sum(T)}')
         return R, T
 
 
