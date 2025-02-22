@@ -117,8 +117,9 @@ def build_scatter_from_omega2(EH_mat, HE_mat, W0, k0L):
     # build scatter matrix
     omega2 = EH_mat @ HE_mat
     LAM2, W = np.linalg.eig(omega2)
-    LAM = np.conj(np.sqrt(LAM2))
-    # LAM = np.sqrt(LAM2)
+    LAM = np.sqrt(LAM2)
+    # hard code the sign of the eigen value...
+    LAM = -np.abs(LAM.real) + 1j*np.abs(LAM.imag)
     V = HE_mat @ W @ np.diag(1/LAM)
     n_half = W0.shape[0]//2
     return build_scatter_from_WV(W, V, W0[:n_half, :n_half],  W0[n_half:, :n_half], LAM, k0L)
