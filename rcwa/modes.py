@@ -113,6 +113,7 @@ def build_omega2_diagonal(er, ur, modes: Modes):
     k1term = 1j * np.concatenate([kxd, kyd], axis=0) 
     k2term = 1j * np.concatenate([-kyd, kxd], axis=1)
 
+
     erz = er[2]
     urz = ur[2]
 
@@ -133,6 +134,10 @@ def build_omega2_diagonal(er, ur, modes: Modes):
 
     EH_mat = k1term @ erzi @ k2term + u_mat
     HE_mat = k1term @ urzi @ k2term + e_mat
+
+    # print('diagonal')
+    # print(EH_mat)
+    # print(HE_mat)
 
     return EH_mat, HE_mat
 
@@ -162,5 +167,9 @@ def build_omega2_isotropic(er, ur, modes: Modes):
 
     EH_mat = k1term @ erci @ k2term + u_mat
     HE_mat = k1term @ urci @ k2term + e_mat
+
+    # print('isotropic')
+    # print(EH_mat)
+    # print(HE_mat)
 
     return EH_mat, HE_mat
