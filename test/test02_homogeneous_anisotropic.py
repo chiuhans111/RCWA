@@ -3,20 +3,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import logging
 import sys
-logger = logging.getLogger("RCWA")
-logger.setLevel(logging.INFO)
-logger.addHandler(logging.StreamHandler(stream=sys.stdout))
-# step1 build your structure
-x = np.linspace(-1, 1, 101)
-y = np.linspace(-1, 1, 101)
-x, y = np.meshgrid(x, y)
 
-mask = x < 0
 
 layers = [
     rcwa.Layer(n=1),
     rcwa.Layer(n=np.ones_like(x), t=1),
-    rcwa.Layer(n=np.array([[[1]], [[2]], [[2]]]), t=1),
+    rcwa.Layer(n=np.array([[[2]], [[1]], [[1]]]), t=1),
     rcwa.Layer(n=2, t=1),
     rcwa.Layer(n=2),
 ]
