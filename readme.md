@@ -5,13 +5,22 @@ This repository contains the implementation of Rigorous Coupled Wave Analysis (R
 a numerical method used to analyze the scattering and diffraction of electromagnetic waves by periodic structures.
 It includes a detailed formulation document, code, and examples.
 
+### V2 Update Plan
+- Provide efficient algorithm that is flexible for:
+  - Simplify for homogeneous case
+  - Stable isotropic case
+  - Extended anisotropic case
+- Provide advanced visualization capability
+  - Calculate and display electric field inside structures
+
 ## Documentation (WIP)
 - [RCWA Documentation](https://github.com/chiuhans111/RCWA/wiki)
 
 ## Directory Structure
-- `formulation/`: Contains the formulation document in both docx and pdf formats, providing a detailed explanation of the RCWA method.
-- `notebook/rcwa_v1.ipynb`: Includes the code implementation of the RCWA method, achieving energy conservation (T+R=1) and providing visualization of some modes.
-
+- `formulation/`: 
+  - Contains the formulation document in both docx and pdf formats, providing a detailed explanation of the RCWA method.
+- `rcwa`: main package
+- `test`: tests and examples
 ## Requirements
 
 - Python 3.10
