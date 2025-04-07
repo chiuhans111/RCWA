@@ -4,30 +4,16 @@ import matplotlib.pyplot as plt
 import logging
 import sys
 
-
+# step1 build your structure
 layers = [
-    rcwa.Layer(n=1),
-    rcwa.Layer(n=1, t=1),
-    rcwa.Layer(n=np.array([[[2]], [[1]], [[1]]]), t=1),
-    # rcwa.Layer(n=np.array([
-    #     [[[2]], [[0]], [[0]]],
-    #     [[[0]], [[1]], [[0]]],
-    #     [[[0]], [[0]], [[1]]],
-    # ]), t=1),
-    rcwa.Layer(n=2, t=1),
     rcwa.Layer(n=2),
+    rcwa.Layer(n=2, t=0.5),
+    rcwa.Layer(n=1, t=2),
+    rcwa.Layer(n=1),
 ]
 
-"""
-TODO: debug,
-Depends on taking conjugate or not after the sqrt of eigen value,
-for isotropic, or diagonal anisotropic case, 
-one of them will create singular matrix when the index is 1.
-One clue is that V matrix is not equal to V0 matrix...
-"""
-
 # define modes
-AOI = np.radians(45)
+AOI = np.radians(31)
 POI = np.radians(0)
 
 modes = rcwa.Modes(
@@ -52,6 +38,11 @@ simulation = rcwa.Simulation(
     keep_modes=True
 )
 
+plt.figure()
+for i in range(4):
+    plt.subplot(2, 2, i+1)
+    plt.imshow(np.abs(simulation.Sglobal[i]))
+
 R, T = simulation.run(Ex=1, Ey=1).get_efficiency()
 print(f"R = {R}")
 print(f"T = {T}")
@@ -61,11 +52,11 @@ zs, fields = simulation.get_internal_field(dz=0.01)
 xs, ys, EX, EY = simulation.render_fields(200, 1, fields)
 plt.figure()
 plt.subplot(1, 2, 1)
-plt.title("EX")
+plt.title('EX')
 plt.pcolormesh(xs, zs, np.real(EX[:, 0, :]), vmin=-1, vmax=1, cmap='RdBu')
 plt.axis('equal')
 plt.subplot(1, 2, 2)
-plt.title("EY")
+plt.title('EY')
 plt.pcolormesh(xs, zs, np.real(EY[:, 0, :]), vmin=-1, vmax=1, cmap='RdBu')
 plt.axis('equal')
 plt.show()

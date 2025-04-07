@@ -18,6 +18,7 @@ layers = [
     rcwa.Layer(n=1, t=1),
     rcwa.Layer(n=1),
 ]
+
 # define modes
 AOI = np.radians(0)
 POI = np.radians(0)

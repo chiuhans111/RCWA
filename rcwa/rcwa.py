@@ -191,7 +191,13 @@ class Simulation:
 
         I = np.sum(I_inc)
         R = I_ref / I
-        T = I_tra / I * np.real(kz_tra) / np.real(kz_ref)
+
+        denominator = np.real(kz_ref)
+        valid = np.abs(denominator) > 0
+        denominator[~valid] = 1
+        T = I_tra / I * np.real(kz_tra) / denominator
+        T[~valid] = 0
+
         logger.info(f'R = {np.sum(R)}')
         logger.info(f'T = {np.sum(T)}')
         logger.info(f'A = {1-np.sum(R)-np.sum(T)}')

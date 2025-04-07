@@ -2,6 +2,7 @@ import numpy as np
 import logging
 logger = logging.getLogger("RCWA")
 
+logger.setLevel(logging.DEBUG)
 """
 logging.NOTSET
 logging.DEBUG

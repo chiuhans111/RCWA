@@ -52,7 +52,7 @@ def build_scatter_from_AB(A, B):
 def build_scatter_from_omega(omega, W0, k0L):
     # build scatter matrix
     LAM, W = np.linalg.eig(omega)
-    order = np.argsort(-np.imag(LAM)*1000+np.real(LAM))
+    order = np.argsort(-np.imag(LAM)*10000+np.real(LAM))
     LAM = LAM[order]
     W = W[:, order]
     WiW0 = np.linalg.solve(W, W0)
