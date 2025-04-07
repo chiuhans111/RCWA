@@ -45,7 +45,7 @@ Jumping straight into the topic: this is a one-dimensional binary dielectric gra
 ## Formulation
 The document available in the `formulation/` directory provides derivations of the mathematical equations, and implementation details of the RCWA method.
 
-## Code Implementation
+## Code Implementation (V1 Branch)
 
 The `notebook/rcwa_v1.ipynb` Jupyter Notebook file contains the code implementation of the RCWA method. 
 The provided code achieves energy conservation (T+R=1). 
