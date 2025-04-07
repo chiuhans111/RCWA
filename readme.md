@@ -45,7 +45,9 @@ Experiment with different parameters and explore the visualization of various mo
 ## Known Issues
 - Unstable, numerical error when using large harmonics, period=wavelength cases.
 
-## Examples
+## Examples (V1)
+The following example is for V1 branch
+
 *results obtained from RSoft DiffractMOD and our implementation of the RCWA method.*
 
 ### Traingular grating transmission diffraction efficiency
@@ -97,8 +99,8 @@ If you have ideas, suggestions, or would like to contribute to the project, plea
 
 ## About the Author
 
-I am an electro-optical student who has a strong passion for optics. 
-I developed this RCWA implementation as part of my research work.
+I am Hans, I love optics. 
+I developed this RCWA implementation as part of my graduate research work.
 If you have any questions, suggestions, or would like to collaborate on optical research projects, feel free to contact me.
 
 ## References
