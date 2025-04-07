@@ -6,12 +6,16 @@ a numerical method used to analyze the scattering and diffraction of electromagn
 It includes a detailed formulation document, code, and examples.
 
 ### V2 Update Plan
-- Provide efficient algorithm that is flexible for:
-  - Simplify for homogeneous case
-  - Stable isotropic case
-  - Extended anisotropic case
-- Provide advanced visualization capability
-  - Calculate and display electric field inside structures
+- Working on:
+  - Provide efficient algorithm that is flexible for:
+    - Simplify for homogeneous case
+    - Stable isotropic case
+    - Extended anisotropic case
+  - Provide advanced visualization capability
+    - Calculate and display electric field inside structures
+- Maybe:
+  - Li's factorization rule
+  - Normal vector method
 
 ## Documentation (WIP)
 - [RCWA Documentation](https://github.com/chiuhans111/RCWA/wiki)
@@ -89,7 +93,7 @@ grating period of 357nm, groove depth of 800 nm, refractive index of 2.0 for bot
 RMSE: 1.279%
 
 
-## Future Direction
+## Future Direction (V1)
 
 The future direction of this project includes the integration of TensorFlow to improve performance 
 and the development of a more user-friendly package with enhanced visualization capabilities. 
