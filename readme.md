@@ -5,6 +5,14 @@ This repository contains the implementation of Rigorous Coupled Wave Analysis (R
 a numerical method used to analyze the scattering and diffraction of electromagnetic waves by periodic structures.
 It includes a detailed formulation document, code, and examples.
 
+### V2 Update Plan
+- Provide efficient algorithm that is flexible for:
+  - Simplify for homogeneous case
+  - Stable isotropic case
+  - Extended anisotropic case
+- Provide advanced visualization capability
+  - Calculate and display electric field inside structures
+
 ## Documentation (WIP)
 - [RCWA Documentation](https://github.com/chiuhans111/RCWA/wiki)
 
