@@ -6,6 +6,14 @@ This repository contains the implementation of Rigorous Coupled Wave Analysis (R
 a numerical method used to analyze the scattering and diffraction of electromagnetic waves by periodic structures.
 It includes a detailed formulation document, code, and examples.
 
+---
+
+Jumping straight into the topic: this is a one-dimensional binary dielectric grating with a period of 0.4 μm and a 50% fill factor, made of alternating regions with refractive indices 1.0 and 2.0. It is illuminated by TE-polarized light at a wavelength of 532 nm and an incidence angle of 10° in the x–z plane.
+
+![output](https://github.com/user-attachments/assets/1d59dfce-56b0-4a9f-a577-1774329e3ed2)
+
+
+
 ### V2 Update Plan
 - Working on:
   - Provide efficient algorithm that is flexible for:
@@ -22,8 +30,8 @@ It includes a detailed formulation document, code, and examples.
 - [RCWA Documentation](https://github.com/chiuhans111/RCWA/wiki)
 
 ## Directory Structure
-- `formulation/`: 
-  - Contains the formulation document in both docx and pdf formats, providing a detailed explanation of the RCWA method.
+- `formulation/`: (WIP)
+  - Contains the (outdated) formulation document in both docx and pdf formats, providing a detailed explanation of the RCWA method.
 - `rcwa`: main package
 - `test`: tests and examples
 ## Requirements
