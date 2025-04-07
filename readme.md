@@ -1,4 +1,5 @@
 # RCWA (Rigorous Coupled Wave Analysis)
+> This package is in it's very early stage, hope for future growth but mostly for my personal fun.
 
 ## Introduction
 This repository contains the implementation of Rigorous Coupled Wave Analysis (RCWA), 
