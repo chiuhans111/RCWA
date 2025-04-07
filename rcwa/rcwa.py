@@ -32,7 +32,7 @@ class Simulation:
         
         Sglobal = Sref
         if keep_modes:
-            mode_matrices = [[Wref, LAMref, 0]]
+            mode_matrices = []
             scatter_mats = []
 
         for layer in layers[1:-1]:
@@ -42,15 +42,15 @@ class Simulation:
                 mode_matrices.append([W, LAM, layer.t])
             Sglobal = star_product(Sglobal, S)
 
-        Sglobal = star_product(Sglobal, Stra)
         self.Sglobal = Sglobal
 
         if keep_modes:
             scatter_mats.append([Sglobal, Stra])
-            mode_matrices.append([Wtra, LAMtra, 0])
-
             self.scatter_mats = scatter_mats
             self.mode_matrices = mode_matrices
+        
+        # sglobal should apply after mat push
+        Sglobal = star_product(Sglobal, Stra)
 
         # kvectors
         kx = modes.kx
@@ -72,25 +72,32 @@ class Simulation:
         self.C_ref = self.Sglobal[0] @ self.C_inc
         self.C_tra = self.Sglobal[2] @ self.C_inc
         return self
-
-    def get_internal_field(self, dz=0.05):
-        n_modes = self.modes.n_modes
-        W0 = self.modes.W0
-        k0 = self.modes.k0
-
-        # break modes (unwrap scatter matrix layer by layer to find the field inside)
-        c1p = self.C_inc
-        c1m = self.C_ref
-        c3p = self.C_tra
-        c3m = np.zeros_like(c1p)
-        c_modes = [(c3p, c3m)]
+    
+    def compute_mode_coefficients(self):
+        # unwrap scatter matrix layer by layer to find the field inside
+        c1p = self.C_inc # incidence mode coefficient
+        c1m = self.C_ref # reflectance mode coefficient
+        c3p = self.C_tra # transmitance mode coefficient
+        c3m = np.zeros_like(c1p) # no backward wave from transmission side
+        # c_modes = [(c3p, c3m)] # record all internal mode coefficient
+        c_modes = [] # record all internal mode coefficient
+        
         for A, B in self.scatter_mats[::-1]:
             c2p, c2m = get_field_incide(c1p, c1m, c3p, c3m, A, B)
             c_modes.append((c2p, c2m))
             c3p = c2p
             c3m = c2m
-        c_modes.append((c1p, c1m))
+        # c_modes.append((c1p, c1m))
+        # c_modes[0] = c_modes[1]
         c_modes = c_modes[::-1]
+        return c_modes
+
+    def get_internal_field(self, dz=0.05, mode_mask = None):
+        n_modes = self.modes.n_modes # number of modes
+        W0 = self.modes.W0 # free space mode matrix
+        k0 = self.modes.k0 # free space wavenumber
+
+        c_modes = self.compute_mode_coefficients()
 
         # Compute the field inside each layers
         fields = []
@@ -98,16 +105,17 @@ class Simulation:
         z0 = 0
 
         c_modes = np.array(c_modes)
+
         # plt.subplot(1, 2, 1)
-        # plt.imshow(np.abs(c_modes[:, 0]), cmap='jet')
+        # plt.imshow(np.angle(c_modes[:, 0]), cmap='jet')
         # plt.subplot(1, 2, 2)
-        # plt.imshow(np.abs(c_modes[:, 1]), cmap='jet')
+        # plt.imshow(np.angle(c_modes[:, 1]), cmap='jet')
         # plt.show()
 
-        for i in range(len(c_modes)-3):
-            W, LAM, L = self.mode_matrices[i+1]
-            c1p, c1m = c_modes[i+1]
-            c2p, c2m = c_modes[i+2]
+        for i in range(len(c_modes)-1):
+            W, LAM, L = self.mode_matrices[i]
+            c1p, c1m = c_modes[i]
+            c2p, c2m = c_modes[i+1]
             nz = np.ceil(L/dz)
 
             WiW0 = np.linalg.solve(W, W0)
@@ -115,13 +123,27 @@ class Simulation:
             C1 = WiW0 @ np.concatenate([c1p, c1m], axis=0)
             C2 = WiW0 @ np.concatenate([c2p, c2m], axis=0)
 
-            for z in np.arange(nz)/nz*L:
-                modep = W[:, :n_modes * 2] @ (
-                    np.exp(LAM[:n_modes*2] * k0*z)[:, None] * C1[:n_modes*2])
-                modem = W[:, n_modes*2:] @ (
-                    np.exp(LAM[n_modes*2:] * k0*(z-L))[:, None] * C2[n_modes*2:])
+            # plt.subplot(2, 1, 1)
+            # plt.plot(np.abs(C1))
+            # plt.subplot(2, 1, 2)
+            # plt.plot(np.abs(C2))
+
+            if mode_mask is not None:
+                order1 = np.argsort(np.argsort(-np.abs(C1[:, 0][:n_modes*2])))
+                order2 = np.argsort(np.argsort(-np.abs(C1[:, 0][n_modes*2:])))
+                order = np.concatenate([order1, order2+n_modes*2])
+                C1 = C1 * mode_mask[order][:,None]
+                C2 = C2 * mode_mask[order][:,None]
+                # C1 /= np.mean(np.abs(C1))
+                # C2 /= np.mean(np.abs(C2))
+
+
+            for z in (np.arange(nz)+0.5)/nz*L:
+                modep = W[:, :n_modes*2] @ (np.exp(LAM[:n_modes*2] * k0*z)[:, None] * C1[:n_modes*2])
+                modem = W[:, n_modes*2:] @ (np.exp(LAM[n_modes*2:] * k0*(z-L))[:, None] * C2[n_modes*2:])
                 mode = modep + modem
                 # mode = W @ (np.exp(LAM * k0*z)[:, None] * C1)
+                # mode = W @ (np.exp(LAM * k0*(z-L))[:, None] * C2)
                 fields.append(mode[:, 0])
                 zs.append(z+z0)
             z0 += L
