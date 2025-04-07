@@ -12,7 +12,7 @@ x, y = np.meshgrid(x, y)
 
 mask = x < 0
 
-thickness = np.linspace(0, 0.2, 50)
+thickness = np.linspace(0, 1, 50)
 efficiency = []
 
 for t in thickness:
@@ -25,7 +25,7 @@ for t in thickness:
     ]
 
     ## Step 2 define modes -------------
-    AOI = np.radians(0)
+    AOI = np.radians(15)
     POI = np.radians(0)
 
     modes = rcwa.Modes(
@@ -51,11 +51,11 @@ for t in thickness:
     )
 
     R, T = simulation.run(Ex=0, Ey=1).get_efficiency()
-    efficiency.append([R[5], T[5], T[6]])
+    efficiency.append([R[5], T[4], T[5], T[6]])
 
 
 # Step 4 visualize the results -------------
-plt.plot(thickness, efficiency, label=['R0', 'T0', 'T1'])
+plt.plot(thickness, efficiency, label=['R0', 'T-1', 'T0', 'T1'])
 plt.xlabel('Thickness')
 plt.ylabel('Efficiency')
 plt.title('Efficiency vs Thickness')

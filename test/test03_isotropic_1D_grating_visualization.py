@@ -14,13 +14,14 @@ x = np.linspace(-1, 1, 101)
 y = np.linspace(-1, 1, 101)
 x, y = np.meshgrid(x, y)
 
-mask = np.abs(x) > 0.5
+fill_factor = 0.5
+mask = np.abs(x) > fill_factor
 
 layers = [
     rcwa.Layer(n=1),
-    rcwa.Layer(n=1, t=1),
-    rcwa.Layer(n=np.where(mask, 1, 2), t=0.15),
-    rcwa.Layer(n=2, t=1),
+    rcwa.Layer(n=1, t=0.5),
+    rcwa.Layer(n=np.where(mask, 1, 2), t=0.4),
+    rcwa.Layer(n=2, t=0.5),
     rcwa.Layer(n=2),
 ]
 
@@ -67,13 +68,31 @@ xs, ys, EX, EY = simulation.render_fields(200, 1, fields)
 xs_tile = []
 EY_tile = []
 
+sx = np.array([0,
+               0.5-fill_factor/2,
+               0.5-fill_factor/2,
+               0.5+fill_factor/2,
+               0.5+fill_factor/2,
+               1]) * modes.period_x
+sy = np.array([1, 1, 0, 0, 1, 1]) * layers[2].t + layers[1].t
+
+sx_tile = []
+sy_tile = []
+
+
 for i in range(4):
     xs_tile.append(xs + i*modes.period_x)
     EY_tile.append(EY*np.exp(1j * i * modes.kx0 * modes.k0 * modes.period_x))
-    
+
+    sx_tile.append(sx + i*modes.period_x)
+    sy_tile.append(sy)
 
 xs = np.concatenate(xs_tile, axis=1)
 EY = np.concatenate(EY_tile, axis=2)
+
+sx = np.concatenate(sx_tile, axis=0)
+sy = np.concatenate(sy_tile, axis=0)
+
 
 plt.figure()
 plt.margins(0)
@@ -87,6 +106,7 @@ while True:
     plt.clf()
     plt.pcolormesh(xs, zs, np.real(
         EY[:, 0, :] * phase), vmin=-scale, vmax=scale, cmap='RdBu')
+    plt.plot(sx, sy, color='k', lw=1)
     plt.axis('equal')
 
     # plt.xlim(np.min(xs), np.max(xs))
