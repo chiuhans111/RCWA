@@ -129,10 +129,13 @@ class Simulation:
             # plt.plot(np.abs(C2))
 
             if mode_mask is not None:
-                C1 = C1 * mode_mask[:, None]
-                C2 = C2 * mode_mask[:, None]
-                C1 /= np.mean(np.abs(C1))
-                C2 /= np.mean(np.abs(C2))
+                order1 = np.argsort(np.argsort(-np.abs(C1[:, 0][:n_modes*2])))
+                order2 = np.argsort(np.argsort(-np.abs(C1[:, 0][n_modes*2:])))
+                order = np.concatenate([order1, order2+n_modes*2])
+                C1 = C1 * mode_mask[order][:,None]
+                C2 = C2 * mode_mask[order][:,None]
+                # C1 /= np.mean(np.abs(C1))
+                # C2 /= np.mean(np.abs(C2))
 
 
             for z in (np.arange(nz)+0.5)/nz*L:

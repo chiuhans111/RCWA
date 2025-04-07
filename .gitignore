@@ -135,3 +135,7 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+# export files
+output/*.*
+output/*/*.*
