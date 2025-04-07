@@ -5,6 +5,7 @@ import logging
 import sys
 
 
+## Step 1 build your structure -------------
 layers = [
     rcwa.Layer(n=1),
     rcwa.Layer(n=1, t=1),
@@ -18,15 +19,8 @@ layers = [
     rcwa.Layer(n=2),
 ]
 
-"""
-TODO: debug,
-Depends on taking conjugate or not after the sqrt of eigen value,
-for isotropic, or diagonal anisotropic case, 
-one of them will create singular matrix when the index is 1.
-One clue is that V matrix is not equal to V0 matrix...
-"""
 
-# define modes
+## Step 2 define modes -------------
 AOI = np.radians(45)
 POI = np.radians(0)
 
@@ -45,7 +39,7 @@ modes.set_direction(
     ky0=np.sin(POI) * np.sin(AOI)*layers[0].n
 )
 
-# step3 run your simulation
+## Step 3 run your simulation -------------
 simulation = rcwa.Simulation(
     modes=modes,
     layers=layers,
@@ -57,6 +51,7 @@ print(f"R = {R}")
 print(f"T = {T}")
 print(f"A = {1-R-T}")
 
+# Step 4 visualize the fields -------------
 zs, fields = simulation.get_internal_field(dz=0.01)
 xs, ys, EX, EY = simulation.render_fields(200, 1, fields)
 plt.figure()

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import logging
 import sys
 
-# step1 build your structure
+## Step 1 build your structure -------------
 layers = [
     rcwa.Layer(n=2),
     rcwa.Layer(n=2, t=0.5),
@@ -12,7 +12,7 @@ layers = [
     rcwa.Layer(n=1),
 ]
 
-# define modes
+## Step 2 define modes -------------
 AOI = np.radians(31)
 POI = np.radians(0)
 
@@ -31,7 +31,7 @@ modes.set_direction(
     ky0=np.sin(POI) * np.sin(AOI)*layers[0].n
 )
 
-# step3 run your simulation
+## Step 3 run your simulation -------------
 simulation = rcwa.Simulation(
     modes=modes,
     layers=layers,
@@ -48,15 +48,18 @@ print(f"R = {R}")
 print(f"T = {T}")
 print(f"A = {1-R-T}")
 
+# Step 4 visualize the field -------------
 zs, fields = simulation.get_internal_field(dz=0.01)
 xs, ys, EX, EY = simulation.render_fields(200, 1, fields)
 plt.figure()
 plt.subplot(1, 2, 1)
 plt.title('EX')
 plt.pcolormesh(xs, zs, np.real(EX[:, 0, :]), vmin=-1, vmax=1, cmap='RdBu')
+plt.axhline(0.5)
 plt.axis('equal')
 plt.subplot(1, 2, 2)
 plt.title('EY')
 plt.pcolormesh(xs, zs, np.real(EY[:, 0, :]), vmin=-1, vmax=1, cmap='RdBu')
+plt.axhline(0.5)
 plt.axis('equal')
 plt.show()

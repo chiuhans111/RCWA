@@ -4,12 +4,10 @@ import matplotlib.pyplot as plt
 import logging
 import sys
 from tqdm import trange
-
 """
-This script will show animated visualization
+This script will export images for visualization !!
 """
 
-# build structure
 x = np.linspace(-1, 1, 101)
 y = np.linspace(-1, 1, 101)
 x, y = np.meshgrid(x, y)
@@ -22,20 +20,20 @@ mask = np.abs(x) > 0.5
 
 layers = [
     rcwa.Layer(n=1),
-    rcwa.Layer(n=1, t=1),
+    rcwa.Layer(n=1, t=0.5),
     # rcwa.Layer(n=0.54, t=0.5),
-    rcwa.Layer(n=np.where(mask, 1, 2), t=0.15),
+    rcwa.Layer(n=np.where(mask, 1, 2), t=0.3),
     # rcwa.Layer(n=np.where(mask1, 1, 2), t=0.1),
     # rcwa.Layer(n=np.where(mask2, 1, 2), t=0.1),
     # rcwa.Layer(n=np.where(mask3, 1, 2), t=0.1),
     # rcwa.Layer(n=np.where(mask4, 1, 2), t=0.1),
-    rcwa.Layer(n=2, t=1),
+    rcwa.Layer(n=2, t=0.5),
     rcwa.Layer(n=2),
 ]
 
 # define modes
 # AOI = np.radians(15)
-AOI = np.radians(10)
+AOI = np.radians(0)
 POI = np.radians(0)
 
 modes = rcwa.Modes(
@@ -44,7 +42,7 @@ modes = rcwa.Modes(
     ky0=0,
     period_x=0.4,
     period_y=2,
-    harmonics_x=10,
+    harmonics_x=5,
     harmonics_y=0
 )
 
@@ -68,41 +66,41 @@ print(f"A = {1-np.sum(R)-np.sum(T)}")
 
 
 # visualization
+E_fields = []
 
-zs, fields = simulation.get_internal_field(dz=0.01)
-xs, ys, EX, EY = simulation.render_fields(200, 1, fields)
+for i in trange(7):
+    mode_mask = None
+    if i>0:
+        mode = [0, 1, 2, 22, 23, 24][i-1]
+        mode_mask = np.zeros(44)
+        mode_mask[mode] = 1
+
+    zs, fields = simulation.get_internal_field(dz=0.001, mode_mask=mode_mask)
+    xs, ys, EX, EY = simulation.render_fields(200, 1, fields)
+    E_fields.append(EY)
 
 
-xs_tile = []
-EY_tile = []
-
-for i in range(4):
-    xs_tile.append(xs + i*modes.period_x)
-    EY_tile.append(EY*np.exp(1j * i * modes.kx0 * modes.k0 * modes.period_x))
-    
-
-xs = np.concatenate(xs_tile, axis=1)
-EY = np.concatenate(EY_tile, axis=2)
-
-plt.figure()
-plt.margins(0)
-i = 0
-while True:
-    i += 1
-    i = i % 16
+# output visualization
+for i in trange(16):
     phase = np.exp(-1j * i / 16 * np.pi*2)
+    plt.figure(figsize=(10, 5))
+    imgid = 1
 
-    scale = 1
-    plt.clf()
-    plt.pcolormesh(xs, zs, np.real(
-        EY[:, 0, :] * phase), vmin=-scale, vmax=scale, cmap='RdBu')
-    plt.axis('equal')
+    for EY in E_fields:
+        scale = 0.5
+        plt.subplot(1, 7, imgid)
+        plt.pcolormesh(xs, zs, np.real(EY[:, 0, :] * phase), vmin=-scale, vmax=scale, cmap='RdBu')
+        plt.axis('equal')
+        plt.margins(0)
+        imgid+=1
+    plt.tight_layout()
+    for j in range(len(E_fields)):
+        plt.subplot(1, 7, j+1)
+        plt.xlim(np.min(xs), np.max(xs))
+        plt.ylim(np.min(zs), np.max(zs))
 
-    # plt.xlim(np.min(xs), np.max(xs))
-    # plt.ylim(np.min(zs), np.max(zs))
-
-    plt.pause(0.1)
-    # plt.savefig(f'./output/250407 Grating Visualization/{i:04d}.jpg')
+    # plt.pause(0.1)
+    plt.savefig(f'./output/250407 Grating Visualization/{i:04d}.jpg')
     # plt.savefig(f'./output/250407 Grating Visualization 2/{i:04d}.jpg')
-# plt.close()
+    plt.close()
 # plt.show()

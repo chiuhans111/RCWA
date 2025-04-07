@@ -29,7 +29,6 @@ class Simulation:
             modes, transmission_side=True)
         
         
-        
         Sglobal = Sref
         if keep_modes:
             mode_matrices = []
@@ -61,6 +60,8 @@ class Simulation:
 
         self.kz_ref = get_kz(n_ref, kx, ky)
         self.kz_tra = get_kz(n_tra, kx, ky)
+        self.kz_ref_0 = get_kz(n_ref, self.modes.kx0, self.modes.ky0)
+        # logger.debug(f'kz_ref = {self.kz_ref}')
 
         self.Wref = Wref
         self.Wtra = Wtra
@@ -214,15 +215,12 @@ class Simulation:
         I = np.sum(I_inc)
         R = I_ref / I
 
-        denominator = np.real(kz_ref)
-        valid = np.abs(denominator) > 0
-        denominator[~valid] = 1
+        denominator = np.real(self.kz_ref_0)
         T = I_tra / I * np.real(kz_tra) / denominator
-        T[~valid] = 0
 
-        logger.info(f'R = {np.sum(R)}')
-        logger.info(f'T = {np.sum(T)}')
-        logger.info(f'A = {1-np.sum(R)-np.sum(T)}')
+        logger.debug(f'R = {np.sum(R)}')
+        logger.debug(f'T = {np.sum(T)}')
+        logger.debug(f'A = {1-np.sum(R)-np.sum(T)}')
         return R, T
 
 
