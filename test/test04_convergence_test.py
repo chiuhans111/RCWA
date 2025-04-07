@@ -34,7 +34,7 @@ for harmonics in harmonics_list:
         wavelength=0.532,
         kx0=0,
         ky0=0,
-        period_x=0.364,
+        period_x=0.3,
         period_y=1,
         harmonics_x=harmonics,
         harmonics_y=0

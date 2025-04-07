@@ -1,8 +1,10 @@
 import numpy as np
 import logging
+logging.basicConfig()
 logger = logging.getLogger("RCWA")
 
-logger.setLevel(logging.DEBUG)
+# Set the logging level
+# logger.setLevel(logging.DEBUG)
 """
 logging.NOTSET
 logging.DEBUG
