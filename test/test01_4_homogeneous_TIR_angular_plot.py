@@ -57,6 +57,9 @@ for i, (Ex, Ey, polarization) in enumerate([(1, 0, 'P'), (0, 1, 'S')]):
     plt.plot(aoi_list, R_list, label = 'R')
     plt.plot(aoi_list, T_list, label = 'T')
     plt.plot(aoi_list, R_list + T_list, label = 'Total')
+    plt.xlabel('AOI (degrees)')
+    plt.ylabel('Efficiency')
     plt.legend()
+plt.tight_layout()
 plt.show()
 

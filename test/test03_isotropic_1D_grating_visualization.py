@@ -15,20 +15,11 @@ y = np.linspace(-1, 1, 101)
 x, y = np.meshgrid(x, y)
 
 mask = np.abs(x) > 0.5
-# mask1 = np.abs(x-0.5) < 0.5
-# mask2 = np.abs(x-0.4) < 0.5
-# mask3 = np.abs(x-0.3) < 0.5
-# mask4 = np.abs(x-0.2) < 0.5
 
 layers = [
     rcwa.Layer(n=1),
     rcwa.Layer(n=1, t=1),
-    # rcwa.Layer(n=0.54, t=0.5),
     rcwa.Layer(n=np.where(mask, 1, 2), t=0.15),
-    # rcwa.Layer(n=np.where(mask1, 1, 2), t=0.1),
-    # rcwa.Layer(n=np.where(mask2, 1, 2), t=0.1),
-    # rcwa.Layer(n=np.where(mask3, 1, 2), t=0.1),
-    # rcwa.Layer(n=np.where(mask4, 1, 2), t=0.1),
     rcwa.Layer(n=2, t=1),
     rcwa.Layer(n=2),
 ]

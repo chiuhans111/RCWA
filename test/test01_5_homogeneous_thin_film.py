@@ -53,4 +53,6 @@ plt.axvline(0.532/1.4142/4/np.cos(AOI))
 
 plt.plot(t_list, Rp_list, label='R')
 plt.plot(t_list, Rs_list, label='T')
+plt.xlabel('Thickness')
+plt.ylabel('Efficiency')
 plt.show()
