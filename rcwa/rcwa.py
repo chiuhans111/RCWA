@@ -42,7 +42,6 @@ class Simulation:
                 mode_matrices.append([W, LAM, layer.t])
             Sglobal = star_product(Sglobal, S)
 
-        self.Sglobal = Sglobal
 
         if keep_modes:
             scatter_mats.append([Sglobal, Stra])
@@ -51,6 +50,7 @@ class Simulation:
         
         # sglobal should apply after mat push
         Sglobal = star_product(Sglobal, Stra)
+        self.Sglobal = Sglobal
 
         # kvectors
         kx = modes.kx
