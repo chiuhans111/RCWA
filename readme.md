@@ -1,22 +1,23 @@
 # RCWA (Rigorous Coupled Wave Analysis)
-> This package is in it's very early stage, hope for future growth but mostly for my personal fun.
+> This package is in its very early stage, hope for future growth but mostly for my own exploration.
 
 ## Introduction
 This repository contains the implementation of Rigorous Coupled Wave Analysis (RCWA), 
 a numerical method used to analyze the scattering and diffraction of electromagnetic waves by periodic structures.
 It includes a detailed formulation document, code, and examples.
 
----
+## Directory Structure
+- `formulation/`: (WIP)
+  - Contains the (outdated) formulation document in both docx and pdf formats, providing a detailed explanation of the RCWA method.
+- `rcwa`: main package
+- `test`: tests and examples
 
-Jumping straight into the topic: this is a one-dimensional binary dielectric grating with a period of 0.4 μm and a 50% fill factor, made of alternating regions with refractive indices 1.0 and 2.0. It is illuminated by TE-polarized light at a wavelength of 532 nm and an incidence angle of 10° in the x–z plane.
-
-![output](https://github.com/user-attachments/assets/1d59dfce-56b0-4a9f-a577-1774329e3ed2)
-
-
+## Documentation (WIP)
+- [RCWA Documentation](https://github.com/chiuhans111/RCWA/wiki)
 
 ### V2 Update Plan
 - Working on:
-  - Provide efficient algorithm that is flexible for:
+  - Provide an efficient algorithm that is flexible for:
     - Simplify for homogeneous case
     - Stable isotropic case
     - Extended anisotropic case
@@ -26,14 +27,11 @@ Jumping straight into the topic: this is a one-dimensional binary dielectric gra
   - Li's factorization rule
   - Normal vector method
 
-## Documentation (WIP)
-- [RCWA Documentation](https://github.com/chiuhans111/RCWA/wiki)
+## Known Issues
+- Unstable
+- Not for professional use
+- Anisotropic case is badly implemented
 
-## Directory Structure
-- `formulation/`: (WIP)
-  - Contains the (outdated) formulation document in both docx and pdf formats, providing a detailed explanation of the RCWA method.
-- `rcwa`: main package
-- `test`: tests and examples
 ## Requirements
 
 - Python 3.10
@@ -42,10 +40,13 @@ Jumping straight into the topic: this is a one-dimensional binary dielectric gra
   - Matplotlib (for plotting)
   - SciPy (for solving eigenproblems)
 
-## Formulation
-The document available in the `formulation/` directory provides derivations of the mathematical equations, and implementation details of the RCWA method.
+# Example
+this is a one-dimensional binary dielectric grating with a period of 0.4 μm and a 50% fill factor, made of alternating regions with refractive indices 1.0 and 2.0. It is illuminated by TE-polarized light at a wavelength of 532 nm and an incidence angle of 10° in the x–z plane.
 
-## Code Implementation (V1 Branch)
+![output](https://github.com/user-attachments/assets/1d59dfce-56b0-4a9f-a577-1774329e3ed2)
+
+
+## Code Implementation (see V1 Branch)
 
 The `notebook/rcwa_v1.ipynb` Jupyter Notebook file contains the code implementation of the RCWA method. 
 The provided code achieves energy conservation (T+R=1). 
@@ -55,10 +56,7 @@ Feel free to modify the code according to your specific requirements,
 such as changing the incident angle, wavelength, or the number of harmonics. 
 Experiment with different parameters and explore the visualization of various modes.
 
-## Known Issues
-- Unstable, numerical error when using large harmonics, period=wavelength cases.
-
-## Examples (V1)
+## Examples (From V1 Branch)
 The following example is for V1 branch
 
 *results obtained from RSoft DiffractMOD and our implementation of the RCWA method.*
