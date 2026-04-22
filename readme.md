@@ -119,21 +119,30 @@ The RCWA formulation is based on the following references:
 - EMPossible: The YouTube channel [EMPossible](https://www.youtube.com/@empossible1577) provides educational videos on electromagnetic principles, including a lecture titled "Lecture 19 (CEM) -- Formulation of Rigorous Coupled-Wave Analysis." This lecture provides a visual explanation of the RCWA formulation and can be viewed [here](https://www.youtube.com/watch?v=LEWTvwrYxiI&t=1s&ab_channel=EMPossible).
 
 
-## Testing
-This project includes a comprehensive, tiered unit test suite and a **Logical API Coverage Audit** to ensure V2 development remains physically and mathematically robust.
+## Testing & Verification
+This project includes a comprehensive, tiered verification framework to ensure mathematical and physical correctness:
 
-To run the full suite:
+- **Tiered Suite**: Unit, Integration, and System tests covering the full mathematical and physical surface.
+- **Golden Regression**: File-based baselines (`.json`) and Visual baselines (`.png`) ensure zero numerical drift.
+- **Dynamic Mutation Engine**: An automated "Bug Injection" tool that stress-tests the suite's sensitivity by randomly corrupting math logic and verifying detection.
+- **API Coverage Audit**: A dynamic dashboard that ensures 100% of the public API is explicitly tested.
+
+### Running Tests
 ```powershell
+# Full test suite
 python -m unittest discover tests
-```
 
-To run the API Coverage Audit:
-```powershell
+# High-fidelity benchmarks (Sweeps & Convergence)
+python tests/run_benchmarks.py
+
+# Mutation Sensitivity Study (Stress Test)
+python tests/dynamic_mutation_engine.py
+
+# Logical API Audit
 python tests/audit_coverage.py
 ```
 
-For more information on the test architecture, "Golden Scenarios," and coverage tracking, see [tests/README.md](tests/README.md).
+For more documentation on the test architecture and goldens, see [tests/README.md](tests/README.md).
 
 ## License
-
 The software is licensed under the MIT License. See the [LICENSE.txt](LICENSE.txt) file for details.
