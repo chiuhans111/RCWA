@@ -25,7 +25,8 @@ It includes a detailed formulation document, code, and examples.
 - `formulation/`: 
   - Contains the formulation document in both docx and pdf formats, providing a detailed explanation of the RCWA method.
 - `rcwa`: main package
-- `test`: tests and examples
+- `test`: legacy tests and examples
+- `tests`: tiered unit and regression test suite
 ## Requirements
 
 - Python 3.10
@@ -117,6 +118,21 @@ The RCWA formulation is based on the following references:
 
 - EMPossible: The YouTube channel [EMPossible](https://www.youtube.com/@empossible1577) provides educational videos on electromagnetic principles, including a lecture titled "Lecture 19 (CEM) -- Formulation of Rigorous Coupled-Wave Analysis." This lecture provides a visual explanation of the RCWA formulation and can be viewed [here](https://www.youtube.com/watch?v=LEWTvwrYxiI&t=1s&ab_channel=EMPossible).
 
+
+## Testing
+This project includes a comprehensive, tiered unit test suite and a **Logical API Coverage Audit** to ensure V2 development remains physically and mathematically robust.
+
+To run the full suite:
+```powershell
+python -m unittest discover tests
+```
+
+To run the API Coverage Audit:
+```powershell
+python tests/audit_coverage.py
+```
+
+For more information on the test architecture, "Golden Scenarios," and coverage tracking, see [tests/README.md](tests/README.md).
 
 ## License
 

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import logging
 import sys
 
-## Step 1 build your structure -------------
+# Step 1 build your structure -------------
 layers = [
     rcwa.Layer(n=2),
     rcwa.Layer(n=2, t=0.5),
@@ -12,7 +12,7 @@ layers = [
     rcwa.Layer(n=1),
 ]
 
-## Step 2 define modes -------------
+# Step 2 define modes -------------
 AOI = np.radians(31)
 POI = np.radians(0)
 
@@ -31,7 +31,7 @@ modes.set_direction(
     ky0=np.sin(POI) * np.sin(AOI)*layers[0].n
 )
 
-## Step 3 run your simulation -------------
+# Step 3 run your simulation -------------
 simulation = rcwa.Simulation(
     modes=modes,
     layers=layers,

@@ -30,13 +30,14 @@ class Layer:
         self.n = np.sqrt(self.er*self.ur)
 
         if not np.isscalar(self.er):
+            if self.er.ndim == 1:
+                self.er = self.er[None, :]
             if self.er.ndim == 2 or self.er.ndim == 3:
                 if np.isscalar(self.ur):
                     self.ur = np.ones_like(self.er) * self.ur
             if self.er.ndim == 4:
                 if np.isscalar(self.ur):
-                    self.ur = np.ones(self.er.shape[:2])[
-                        None, None] * np.eye(3)[:, :, None, None] * self.ur
+                    self.ur = np.eye(3)[:, :, None, None] * np.ones_like(self.er) * self.ur
 
     def build_scatter_side(self, modes: Modes, transmission_side=False):
         logger.info(

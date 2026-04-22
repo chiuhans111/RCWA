@@ -80,12 +80,13 @@ E_fields = []
 
 for i in trange(9):
     mode_mask = None
-    if i>0:
+    if i > 0:
         mode = [i-1]
         mode_mask = np.zeros(44)
         mode_mask[mode] = 1
 
-    zs, fields = simulation.get_internal_field(dz=0.001, mode_mask=mode_mask, mode_mask_seperate_direction=False)
+    zs, fields = simulation.get_internal_field(
+        dz=0.001, mode_mask=mode_mask, mode_mask_seperate_direction=False)
     xs, ys, EX, EY = simulation.render_fields(200, 1, fields)
     E_fields.append(EY)
 
@@ -99,12 +100,13 @@ for i in trange(16):
     for EY in E_fields:
         scale = 1
         plt.subplot(1, 9, imgid)
-        plt.pcolormesh(xs, zs, np.real(EY[:, 0, :] * phase), vmin=-scale, vmax=scale, cmap='PuOr')
+        plt.pcolormesh(xs, zs, np.real(
+            EY[:, 0, :] * phase), vmin=-scale, vmax=scale, cmap='PuOr')
         plt.plot(sx, sy, color='k', lw=1)
         plt.axis('equal')
         plt.margins(0)
         plt.axis(False)
-        imgid+=1
+        imgid += 1
 
     plt.tight_layout()
     for j in range(len(E_fields)):

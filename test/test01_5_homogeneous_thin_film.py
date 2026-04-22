@@ -9,14 +9,14 @@ Rp_list = []
 Rs_list = []
 
 for t in t_list:
-    ## Step 1 build your structure -------------
+    # Step 1 build your structure -------------
     layers = [
         rcwa.Layer(n=1),
         rcwa.Layer(n=1.4142, t=t),
         rcwa.Layer(n=2),
     ]
 
-    ## Step 2 define modes -------------
+    # Step 2 define modes -------------
     AOI = np.radians(20)
     POI = np.radians(0)
 
@@ -35,7 +35,7 @@ for t in t_list:
         ky0=np.sin(POI) * np.sin(AOI)*layers[0].n
     )
 
-    ## Step 3 run your simulation -------------
+    # Step 3 run your simulation -------------
     simulation = rcwa.Simulation(
         modes=modes,
         layers=layers,
@@ -44,7 +44,7 @@ for t in t_list:
 
     Rp, Tp = simulation.run(Ex=1, Ey=0).get_efficiency()
     Rs, Ts = simulation.run(Ex=0, Ey=1).get_efficiency()
-    
+
     Rp_list.append(Rp)
     Rs_list.append(Rs)
 

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import logging
 import sys
 
-## Step 1 build your structure -------------
+# Step 1 build your structure -------------
 layers = [
     rcwa.Layer(n=1),
     rcwa.Layer(n=1, t=1),
@@ -12,7 +12,7 @@ layers = [
     rcwa.Layer(n=2),
 ]
 
-## Step 2 define modes -------------
+# Step 2 define modes -------------
 aoi_list = np.arange(90)
 
 for i, (Ex, Ey, polarization) in enumerate([(1, 0, 'P'), (0, 1, 'S')]):
@@ -38,7 +38,7 @@ for i, (Ex, Ey, polarization) in enumerate([(1, 0, 'P'), (0, 1, 'S')]):
             ky0=np.sin(POI) * np.sin(AOI)*layers[0].n
         )
 
-        ## Step 3 run your simulation -------------
+        # Step 3 run your simulation -------------
         simulation = rcwa.Simulation(
             modes=modes,
             layers=layers,
@@ -54,12 +54,11 @@ for i, (Ex, Ey, polarization) in enumerate([(1, 0, 'P'), (0, 1, 'S')]):
     T_list = np.array(T_list)
     plt.subplot(1, 2, i+1)
     plt.title(f'{polarization}-Polarization')
-    plt.plot(aoi_list, R_list, label = 'R')
-    plt.plot(aoi_list, T_list, label = 'T')
-    plt.plot(aoi_list, R_list + T_list, label = 'Total')
+    plt.plot(aoi_list, R_list, label='R')
+    plt.plot(aoi_list, T_list, label='T')
+    plt.plot(aoi_list, R_list + T_list, label='Total')
     plt.xlabel('AOI (degrees)')
     plt.ylabel('Efficiency')
     plt.legend()
 plt.tight_layout()
 plt.show()
-

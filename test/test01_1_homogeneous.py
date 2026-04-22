@@ -7,19 +7,19 @@ This is a basic example for creating two layer of homogeneous material,
 Equivalent to calculate the fresnel reflection and transmission
 """
 
-## Step 1 build your structure -------------
+# Step 1 build your structure -------------
 layers = [
     rcwa.Layer(n=1),
-    rcwa.Layer(n=1, t=1), # this intermediate layer is here for visualization
-    rcwa.Layer(n=2, t=1), # this intermediate layer is here for visualization
+    rcwa.Layer(n=1, t=1),  # this intermediate layer is here for visualization
+    rcwa.Layer(n=2, t=1),  # this intermediate layer is here for visualization
     rcwa.Layer(n=2),
 ]
 
-## Step 2 define modes -------------
+# Step 2 define modes -------------
 # the kx0 and ky0 are normalized x and y component of the k-vector
 modes = rcwa.Modes(
     wavelength=0.532,
-    kx0=0, 
+    kx0=0,
     ky0=0,
     period_x=2,
     period_y=2,
@@ -37,11 +37,11 @@ modes.set_direction(
     ky0=np.sin(POI) * np.sin(AOI) * layers[0].n
 )
 
-## Step 3 run your simulation -------------
+# Step 3 run your simulation -------------
 simulation = rcwa.Simulation(
     modes=modes,
     layers=layers,
-    keep_modes=True # set to True for visualization
+    keep_modes=True  # set to True for visualization
 )
 
 # A simulation can be re run with different Ex, Ey (polarization)

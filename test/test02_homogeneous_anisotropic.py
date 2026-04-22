@@ -5,11 +5,12 @@ import logging
 import sys
 
 
-## Step 1 build your structure -------------
+# Step 1 build your structure -------------
 layers = [
     rcwa.Layer(n=1),
     rcwa.Layer(n=1, t=1),
     rcwa.Layer(n=np.array([[[2]], [[1]], [[1]]]), t=1),
+    # Alternatively, this is a 4 dimensional array that represents the same structure
     # rcwa.Layer(n=np.array([
     #     [[[2]], [[0]], [[0]]],
     #     [[[0]], [[1]], [[0]]],
@@ -20,7 +21,7 @@ layers = [
 ]
 
 
-## Step 2 define modes -------------
+# Step 2 define modes -------------
 AOI = np.radians(45)
 POI = np.radians(0)
 
@@ -39,7 +40,7 @@ modes.set_direction(
     ky0=np.sin(POI) * np.sin(AOI)*layers[0].n
 )
 
-## Step 3 run your simulation -------------
+# Step 3 run your simulation -------------
 simulation = rcwa.Simulation(
     modes=modes,
     layers=layers,

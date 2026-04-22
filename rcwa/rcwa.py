@@ -8,7 +8,7 @@ from .utils import logger
 
 
 def get_kz(n, kx, ky):
-    kz = np.sqrt((n**2-kx**2-ky**2).astype('complex'))
+    kz = np.sqrt(np.array(n**2-kx**2-ky**2, dtype=complex))
     return kz
 
 

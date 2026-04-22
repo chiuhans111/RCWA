@@ -5,7 +5,7 @@ import logging
 import sys
 from tqdm import tqdm
 
-## Step 1 build your structure -------------
+# Step 1 build your structure -------------
 x = np.linspace(-1, 1, 101)
 y = np.linspace(-1, 1, 101)
 x, y = np.meshgrid(x, y)
@@ -24,7 +24,7 @@ for t in thickness:
         rcwa.Layer(n=2),
     ]
 
-    ## Step 2 define modes -------------
+    # Step 2 define modes -------------
     AOI = np.radians(15)
     POI = np.radians(0)
 
@@ -43,7 +43,7 @@ for t in thickness:
         ky0=np.sin(POI) * np.sin(AOI)*layers[0].n
     )
 
-    ## Step 3 run your simulation -------------
+    # Step 3 run your simulation -------------
     simulation = rcwa.Simulation(
         modes=modes,
         layers=layers,
