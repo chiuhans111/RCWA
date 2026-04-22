@@ -8,11 +8,13 @@ from tqdm import trange
 This script will export images for visualization !!
 """
 
+
 x = np.linspace(-1, 1, 101)
 y = np.linspace(-1, 1, 101)
 x, y = np.meshgrid(x, y)
 
-mask = np.abs(x) > 0.5
+fill_factor = 0.35
+mask = np.abs(x) > fill_factor
 # mask1 = np.abs(x-0.5) < 0.5
 # mask2 = np.abs(x-0.4) < 0.5
 # mask3 = np.abs(x-0.3) < 0.5
@@ -20,29 +22,29 @@ mask = np.abs(x) > 0.5
 
 layers = [
     rcwa.Layer(n=1),
-    rcwa.Layer(n=1, t=0.5),
+    rcwa.Layer(n=1, t=2),
     # rcwa.Layer(n=0.54, t=0.5),
-    rcwa.Layer(n=np.where(mask, 1, 2), t=0.3),
+    rcwa.Layer(n=np.where(mask, 1, 2), t=2),
     # rcwa.Layer(n=np.where(mask1, 1, 2), t=0.1),
     # rcwa.Layer(n=np.where(mask2, 1, 2), t=0.1),
     # rcwa.Layer(n=np.where(mask3, 1, 2), t=0.1),
     # rcwa.Layer(n=np.where(mask4, 1, 2), t=0.1),
-    rcwa.Layer(n=2, t=0.5),
+    rcwa.Layer(n=2, t=2),
     rcwa.Layer(n=2),
 ]
 
 # define modes
 # AOI = np.radians(15)
-AOI = np.radians(0)
+AOI = np.radians(30)
 POI = np.radians(0)
 
 modes = rcwa.Modes(
     wavelength=0.532,
     kx0=0,
     ky0=0,
-    period_x=0.4,
+    period_x=1,
     period_y=2,
-    harmonics_x=5,
+    harmonics_x=1,
     harmonics_y=0
 )
 
@@ -66,16 +68,24 @@ print(f"A = {1-np.sum(R)-np.sum(T)}")
 
 
 # visualization
+sx = np.array([0,
+               0.5-fill_factor/2,
+               0.5-fill_factor/2,
+               0.5+fill_factor/2,
+               0.5+fill_factor/2,
+               1]) * modes.period_x
+sy = np.array([1, 1, 0, 0, 1, 1]) * layers[2].t + layers[1].t
+
 E_fields = []
 
-for i in trange(7):
+for i in trange(9):
     mode_mask = None
     if i>0:
-        mode = [0, 1, 2, 22, 23, 24][i-1]
+        mode = [i-1]
         mode_mask = np.zeros(44)
         mode_mask[mode] = 1
 
-    zs, fields = simulation.get_internal_field(dz=0.001, mode_mask=mode_mask)
+    zs, fields = simulation.get_internal_field(dz=0.001, mode_mask=mode_mask, mode_mask_seperate_direction=False)
     xs, ys, EX, EY = simulation.render_fields(200, 1, fields)
     E_fields.append(EY)
 
@@ -83,24 +93,27 @@ for i in trange(7):
 # output visualization
 for i in trange(16):
     phase = np.exp(-1j * i / 16 * np.pi*2)
-    plt.figure(figsize=(10, 5))
+    plt.figure(figsize=(12, 5))
     imgid = 1
 
     for EY in E_fields:
-        scale = 0.5
-        plt.subplot(1, 7, imgid)
-        plt.pcolormesh(xs, zs, np.real(EY[:, 0, :] * phase), vmin=-scale, vmax=scale, cmap='RdBu')
+        scale = 1
+        plt.subplot(1, 9, imgid)
+        plt.pcolormesh(xs, zs, np.real(EY[:, 0, :] * phase), vmin=-scale, vmax=scale, cmap='PuOr')
+        plt.plot(sx, sy, color='k', lw=1)
         plt.axis('equal')
         plt.margins(0)
+        plt.axis(False)
         imgid+=1
+
     plt.tight_layout()
     for j in range(len(E_fields)):
-        plt.subplot(1, 7, j+1)
+        plt.subplot(1, 9, j+1)
         plt.xlim(np.min(xs), np.max(xs))
         plt.ylim(np.min(zs), np.max(zs))
 
     # plt.pause(0.1)
-    plt.savefig(f'./output/250407 Grating Visualization/{i:04d}.jpg')
+    plt.savefig(f'./output/{i:04d}.jpg')
     # plt.savefig(f'./output/250407 Grating Visualization 2/{i:04d}.jpg')
     plt.close()
 # plt.show()

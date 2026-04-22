@@ -6,6 +6,7 @@ from .layer import Layer
 from .scattermatrix import star_product, get_field_incide
 from .utils import logger
 
+
 def get_kz(n, kx, ky):
     kz = np.sqrt((n**2-kx**2-ky**2).astype('complex'))
     return kz
@@ -27,8 +28,7 @@ class Simulation:
         Sref, Wref, LAMref = layers[0].build_scatter_side(modes)
         Stra, Wtra, LAMtra = layers[-1].build_scatter_side(
             modes, transmission_side=True)
-        
-        
+
         Sglobal = Sref
         if keep_modes:
             mode_matrices = []
@@ -41,12 +41,11 @@ class Simulation:
                 mode_matrices.append([W, LAM, layer.t])
             Sglobal = star_product(Sglobal, S)
 
-
         if keep_modes:
             scatter_mats.append([Sglobal, Stra])
             self.scatter_mats = scatter_mats
             self.mode_matrices = mode_matrices
-        
+
         # sglobal should apply after mat push
         Sglobal = star_product(Sglobal, Stra)
         self.Sglobal = Sglobal
@@ -73,16 +72,16 @@ class Simulation:
         self.C_ref = self.Sglobal[0] @ self.C_inc
         self.C_tra = self.Sglobal[2] @ self.C_inc
         return self
-    
+
     def compute_mode_coefficients(self):
         # unwrap scatter matrix layer by layer to find the field inside
-        c1p = self.C_inc # incidence mode coefficient
-        c1m = self.C_ref # reflectance mode coefficient
-        c3p = self.C_tra # transmitance mode coefficient
-        c3m = np.zeros_like(c1p) # no backward wave from transmission side
+        c1p = self.C_inc  # incidence mode coefficient
+        c1m = self.C_ref  # reflectance mode coefficient
+        c3p = self.C_tra  # transmitance mode coefficient
+        c3m = np.zeros_like(c1p)  # no backward wave from transmission side
         # c_modes = [(c3p, c3m)] # record all internal mode coefficient
-        c_modes = [] # record all internal mode coefficient
-        
+        c_modes = []  # record all internal mode coefficient
+
         for A, B in self.scatter_mats[::-1]:
             c2p, c2m = get_field_incide(c1p, c1m, c3p, c3m, A, B)
             c_modes.append((c2p, c2m))
@@ -93,10 +92,11 @@ class Simulation:
         c_modes = c_modes[::-1]
         return c_modes
 
-    def get_internal_field(self, dz=0.05, mode_mask = None):
-        n_modes = self.modes.n_modes # number of modes
-        W0 = self.modes.W0 # free space mode matrix
-        k0 = self.modes.k0 # free space wavenumber
+    def get_internal_field(self, dz=0.05, mode_mask=None,
+                           mode_mask_seperate_direction=True):
+        n_modes = self.modes.n_modes  # number of modes
+        W0 = self.modes.W0  # free space mode matrix
+        k0 = self.modes.k0  # free space wavenumber
 
         c_modes = self.compute_mode_coefficients()
 
@@ -130,18 +130,26 @@ class Simulation:
             # plt.plot(np.abs(C2))
 
             if mode_mask is not None:
-                order1 = np.argsort(np.argsort(-np.abs(C1[:, 0][:n_modes*2])))
-                order2 = np.argsort(np.argsort(-np.abs(C1[:, 0][n_modes*2:])))
-                order = np.concatenate([order1, order2+n_modes*2])
-                C1 = C1 * mode_mask[order][:,None]
-                C2 = C2 * mode_mask[order][:,None]
+                if mode_mask_seperate_direction:
+                    order1 = np.argsort(
+                        np.argsort(-np.abs(C1[:, 0][:n_modes*2])))
+                    order2 = np.argsort(
+                        np.argsort(-np.abs(C1[:, 0][n_modes*2:])))
+                    order = np.concatenate([order1, order2+n_modes*2])
+                    C1 = C1 * mode_mask[order][:, None]
+                    C2 = C2 * mode_mask[order][:, None]
+                else:
+                    order = np.argsort(np.argsort(-np.abs(C1[:, 0])))
+                    C1 = C1 * mode_mask[order][:, None]
+                    C2 = C2 * mode_mask[order][:, None]
                 # C1 /= np.mean(np.abs(C1))
                 # C2 /= np.mean(np.abs(C2))
 
-
             for z in (np.arange(nz)+0.5)/nz*L:
-                modep = W[:, :n_modes*2] @ (np.exp(LAM[:n_modes*2] * k0*z)[:, None] * C1[:n_modes*2])
-                modem = W[:, n_modes*2:] @ (np.exp(LAM[n_modes*2:] * k0*(z-L))[:, None] * C2[n_modes*2:])
+                modep = W[:, :n_modes * 2] @ (
+                    np.exp(LAM[:n_modes*2] * k0*z)[:, None] * C1[:n_modes*2])
+                modem = W[:, n_modes*2:] @ (
+                    np.exp(LAM[n_modes*2:] * k0*(z-L))[:, None] * C2[n_modes*2:])
                 mode = modep + modem
                 # mode = W @ (np.exp(LAM * k0*z)[:, None] * C1)
                 # mode = W @ (np.exp(LAM * k0*(z-L))[:, None] * C2)
@@ -192,7 +200,7 @@ class Simulation:
                                        )[None] * points_x * points_y
 
         return px, py, EX, EY
-    
+
     def get_efficiency(self):
         n_modes = self.modes.n_modes
         kx = self.modes.kx
@@ -201,9 +209,9 @@ class Simulation:
         kz_tra = self.kz_tra
 
         # Compute diffraction efficiency
-        E_inc = self.C_inc # self.Wref[:n_modes*2, :n_modes*2] @ self.C_inc
-        E_ref = self.C_ref # self.Wref[:n_modes*2, n_modes*2:] @ self.C_ref
-        E_tra = self.C_tra # self.Wtra[:n_modes*2, :n_modes*2] @ self.C_tra
+        E_inc = self.C_inc  # self.Wref[:n_modes*2, :n_modes*2] @ self.C_inc
+        E_ref = self.C_ref  # self.Wref[:n_modes*2, n_modes*2:] @ self.C_ref
+        E_tra = self.C_tra  # self.Wtra[:n_modes*2, :n_modes*2] @ self.C_tra
 
         I_inc = get_intensity(E_inc[:n_modes, 0],
                               E_inc[n_modes:, 0], kx, ky, kz_ref)
