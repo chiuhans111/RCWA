@@ -1,11 +1,11 @@
 from rcwa import rcwa
 import numpy as np
 import matplotlib.pyplot as plt
-import logging
-import sys
+from tqdm import tqdm
 
 R_list = []
 T_list = []
+A_list = []
 harmonics_list = np.arange(1, 40)
 
 
@@ -28,7 +28,7 @@ layers = [
 AOI = np.radians(45)
 POI = np.radians(30)
 
-for harmonics in harmonics_list:
+for harmonics in tqdm(harmonics_list):
 
     modes = rcwa.Modes(
         wavelength=0.532,
@@ -54,12 +54,30 @@ for harmonics in harmonics_list:
 
     R, T = simulation.run(Ex=1, Ey=1).get_efficiency()
 
-    R_list.append(R[len(R)//2])
-    T_list.append(R[len(R)//2-1])
+    R_list.append(R[len(R)//2-1])  # mode 0
+    T_list.append(T[len(R)//2-1])  # mode -1
+    A_list.append(1 - np.sum(R) - np.sum(T))  # total absorption
 
-plt.plot(harmonics_list, T_list, label='R1')
+
+R_list = np.array(R_list)
+T_list = np.array(T_list)
+A_list = np.array(A_list)
+
+R_converge = R_list[-1]
+
+Error = np.abs(R_list - R_converge) / R_converge
+# Find the first index where error is below 1%
+Converged = np.where(Error < 0.01)[0][0]
+
+print(
+    f'Achieving < 1% error at {harmonics_list[Converged]} harmonics, error = {Error[Converged]}.')
+
+plt.plot(harmonics_list, R_list, label='R')
+plt.plot(harmonics_list, T_list, label='T')
+plt.plot(harmonics_list, A_list, label='A')
 plt.axhline(0, c='gray')
-plt.axhline(T_list[-1], c='k')
+plt.axhline(R_list[-1], c='k')
+plt.axvline(harmonics_list[Converged], c='r', ls='--')
 plt.legend()
 plt.xlabel('harmonics')
 plt.show()

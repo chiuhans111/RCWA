@@ -92,6 +92,7 @@ for i in trange(9):
 
 
 # output visualization
+print("exporting frames...")
 for i in trange(16):
     phase = np.exp(-1j * i / 16 * np.pi*2)
     plt.figure(figsize=(12, 5))
@@ -101,7 +102,7 @@ for i in trange(16):
         scale = 1
         plt.subplot(1, 9, imgid)
         plt.pcolormesh(xs, zs, np.real(
-            EY[:, 0, :] * phase), vmin=-scale, vmax=scale, cmap='PuOr')
+            EY[:, 0, :] * phase), vmin=-scale, vmax=scale, cmap='RdBu')
         plt.plot(sx, sy, color='k', lw=1)
         plt.axis('equal')
         plt.margins(0)
