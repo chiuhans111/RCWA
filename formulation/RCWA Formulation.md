@@ -1,95 +1,67 @@
-# Formulation of RCWA
-> This is V1 old document
+# Formulation of RCWA (V2)
 
-Rigorous coupled wave analysis formulation.
+> This document describes the mathematical formulation of the Rigorous Coupled Wave Analysis (RCWA) as implemented in the V2 engine.
 
-This is a documentation to provide reference to important derivation, and help people understand the implementation in the code. Some variable will have (`Variable Name`) to denote the short-form variable naming convention as it's sometimes hard to understand.
+Note: This document is updated by AI.
 
-## Maxwell Equation
-$$\nabla\cdot\vec D=\rho$$
+## 1. Maxwell's Equations and Normalization
 
-$$\nabla\cdot\vec B=0$$
+We start with the monochromatic, source-free Maxwell equations in frequency space:
+$$\nabla \times \vec{E} = i\omega\mu\vec{H}$$
+$$\nabla \times \vec{H} = -i\omega\epsilon\vec{E}$$
 
-$$\nabla\times\vec E=-{\partial\vec B\over\partial t}$$
+To improve numerical stability, we normalize the magnetic field $\tilde{\vec{H}}$ such that:
+$$\tilde{\vec{H}} = i\sqrt{\frac{\mu_0}{\epsilon_0}}\vec{H}$$
 
-$$\nabla\times\vec H=\vec J+{\partial\vec D\over\partial t}$$
+The normalized Maxwell equations become:
+$$\nabla \times \vec{E} = k_0 \mu_r \tilde{\vec{H}}$$
+$$\nabla \times \tilde{\vec{H}} = k_0 \epsilon_r \vec{E}$$
+where $k_0 = 2\pi/\lambda_0$ is the free-space wavenumber.
 
-- $\vec D$ : Electric displacement
-- $\vec B$ : Magnetic flux density
-- $\vec H$ : Magnetic field vector (`H`)
-- $\vec E$ : Electric field vector (`E`)
-- $\rho$ : Charge density
-- $J$ : Current density
-- $t$ : time (`t`)
+## 2. Fourier Space Mapping (Li's Rules)
 
-### Linear material assumption 
-$$\vec D=\varepsilon\vec E$$
+For a periodic structure, the permittivity $\epsilon_r(x,y)$ and the fields are expanded into Fourier series. When multiplying two Fourier series (e.g., $\vec{D} = \epsilon \vec{E}$), we must use **Li's Rules (1997)** to ensure convergence:
 
-$$\vec B=\mu\vec H$$
+1. **Laurent's Rule**: If $\epsilon$ and $E$ have no concurrent discontinuities, the product is the convolution matrix $[[\epsilon]]$.
+2. **Inverse Rule**: If $\epsilon$ and $E$ are concurrently discontinuous, the product is $[[1/\epsilon]]^{-1}$.
 
-- $\varepsilon$ : Permittivity
-- $\mu$ : Permeability
+In our implementation (`modes.py`), we construct the convolution matrices for $\epsilon_x, \epsilon_y, \epsilon_z$ according to these rules to avoid the "Gibbs phenomenon" in grating simulations.
 
-###  Source-free assumption
-$$\rho=0$$
+## 3. The State-Space Equation
 
-$$J=0$$
+Substituting the plane wave expansions into the normalized Maxwell equations, we eliminate the longitudinal components ($E_z, H_z$) to arrive at a set of coupled differential equations for the transverse components:
 
-### Monochromatic assumption
-$$\vec E\propto e^{-i\omega t}$$
+$$\frac{d}{d(k_0 z)} \begin{bmatrix} E_x \\ E_y \\ H_x \\ H_y \end{bmatrix} = \Omega \begin{bmatrix} E_x \\ E_y \\ H_x \\ H_y \end{bmatrix}$$
 
-$$\vec H\propto e^{-i\omega t}$$
-- $\omega$ : Angular frequency
+For an isotropic layer, the matrix $\Omega$ is:
+$$\Omega = \begin{bmatrix} 0 & 0 & S_x \epsilon_z^{-1} S_y & \mu_r I - S_x \epsilon_z^{-1} S_x \\ 0 & 0 & S_y \epsilon_z^{-1} S_y - \mu_r I & -S_y \epsilon_z^{-1} S_x \\ S_x \mu_r^{-1} S_y & \epsilon_y - S_x \mu_r^{-1} S_x & 0 & 0 \\ S_y \mu_r^{-1} S_y - \epsilon_x & -S_y \mu_r^{-1} S_x & 0 & 0 \end{bmatrix}$$
+where $S_x, S_y$ are diagonal matrices of normalized wave vectors.
 
+## 4. Eigen-mode Solution
 
+In each layer, we solve the eigenproblem of the $\Omega$ matrix:
+$$\Omega = \begin{bmatrix} W & W \\ V & -V \end{bmatrix} \begin{bmatrix} \lambda & 0 \\ 0 & -\lambda \end{bmatrix} \begin{bmatrix} W & W \\ V & -V \end{bmatrix}^{-1}$$
 
-### Normalization of magnetic field
-$$\tilde{\vec H}=i\sqrt{\mu_0\over\varepsilon_0}\vec H$$
+- **$W$ Matrix**: Contains the electric field eigenvectors.
+- **$V$ Matrix**: Contains the magnetic field eigenvectors.
+- **$\lambda$ Vector**: Contains the propagation constants (eigenvalues).
 
-- $\varepsilon_0$ Free-space permittivity
-- $\mu_0$ : Free-space permeability
+The fields at any point $z$ within the layer are:
+$$\psi(z) = \begin{bmatrix} W & W \\ V & -V \end{bmatrix} \begin{bmatrix} e^{\lambda k_0 z} & 0 \\ 0 & e^{-\lambda k_0 z} \end{bmatrix} \vec{c}$$
 
-$$\nabla\times\vec E=k_0\mu_r\tilde{\vec H}$$
+## 5. S-Matrix Cascading (Redheffer Star Product)
 
-$$\nabla\times\tilde{\vec H}=k_0\varepsilon_r\vec E$$
+To connect multiple layers without numerical instability (the "$h$ problem"), we convert the boundary conditions into a **Scattering Matrix (S-Matrix)**. For two layers with matrices $S^{(A)}$ and $S^{(B)}$, the combined matrix $S^{(AB)} = S^{(A)} \otimes S^{(B)}$ is calculated via the Redheffer Star Product:
 
-- $k_0$ : Free-space wave number $2\pi\over\lambda_0$
-    - $\lambda_0$ : Free-space wavelength (`wl`)
-- $\varepsilon_r$ : Relative permittivity $\varepsilon\over\varepsilon_0$ (`er`)
-- $\mu_r$ : Relative permeability $\mu\over\mu_0$ (`ur`)
+$$S_{11}^{(AB)} = S_{11}^{(A)} + S_{12}^{(A)} (I - S_{11}^{(B)} S_{22}^{(A)})^{-1} S_{11}^{(B)} S_{21}^{(A)}$$
+$$S_{12}^{(AB)} = S_{12}^{(A)} (I - S_{11}^{(B)} S_{22}^{(A)})^{-1} S_{12}^{(B)}$$
+$$S_{21}^{(AB)} = S_{21}^{(B)} (I - S_{22}^{(A)} S_{11}^{(B)})^{-1} S_{21}^{(A)}$$
+$$S_{22}^{(AB)} = S_{22}^{(B)} + S_{21}^{(B)} (I - S_{22}^{(A)} S_{11}^{(B)})^{-1} S_{22}^{(A)} S_{12}^{(B)}$$
 
-> ### How does this normalization term determined?
-> we can observe if we apply linear, source-free, monochromatic assumption, we get the following equation:
-> $$\nabla\times\vec E=i\omega\mu\vec H$$
-> $$\nabla\times\vec H=-i\omega\varepsilon\vec E$$
-> Where the value of $\mu$ and $\varepsilon$ in free-space is:
-> - $\varepsilon_0 = 8.8541878128(13)×10^{−12}$ F⋅m−1
-> - $\mu_0 = 1.25663706212(19)×10^{−6}$ N⋅A−2
-> 
-> And the angular frequency of the visible light is typically $2.7×10^{15}$ rad/s to $4.7×10^{15}rad/s$, which is hard to compute.
->
-> If we introduce a normalization term as $\tilde{\vec H}=\alpha\vec H$, the equation becomes:
-> $$\nabla\times\vec E=({i\omega\mu\over\alpha})\tilde{\vec H}$$
-> $$\nabla\times\tilde{\vec H}=(-i\omega\varepsilon\alpha)\vec E$$
-> We can balance the coefficient in free-space condition as:
-> $${i\omega\mu_0\over\alpha}=-i\omega\varepsilon_0\alpha$$
-> Result in:
-> $$\alpha^2=-{\mu_0\over\varepsilon_0}$$
-> $$\alpha=i\sqrt{\mu_0\over\varepsilon_0}$$
+This approach is implemented in `scattermatrix.py` and ensures that decaying evanescent waves do not cause exponential growth in the calculation.
 
+## 6. Efficiency Calculation
 
-## Plane wave decomposition
-$$\vec E(x,y;z)=\sum_{mn}\vec E(m,n;z)e^{i(k_x(m,n)x+k_y(m,n)y)}$$
-
-$$\tilde{\vec H}(x,y;z)=\sum_{mn}\vec H(m,n;z)e^{i(k_x(m,n)x+k_y(m,n)y)}$$
-
-- $\vec E(m,n;z)$ : Electric field coefficients
-- $\vec H(m,n;z)$ : Magnetic field coefficients
-- $m,n$ : Mode number, integer
-
-$$\varepsilon_r(x, y)=\sum_{mn}\varepsilon_r(m,n)e^{i(mG_xx+nG_yy)}$$
-
-$$\mu_r(x,y)=\sum_{mn}\mu_r(m,n)e^{i(mG_xx+nG_yy)}$$
-
-- $\varepsilon_r(m,n)$ : Permittivity coefficients
-- $\mu_r(m,n)$ : Permeability coefficients
+After calculating the global S-matrix for the entire stack, we apply the incident wave vector to find the reflected and transmitted coefficients. The diffraction efficiency for each mode is then:
+$$DE_{refl, m} = \frac{\text{Re}(k_{z, m}^{inc})}{\text{Re}(k_{z, 0}^{inc})} |R_m|^2$$
+$$DE_{tran, m} = \frac{\text{Re}(k_{z, m}^{sub})}{\text{Re}(k_{z, 0}^{inc})} |T_m|^2$$
